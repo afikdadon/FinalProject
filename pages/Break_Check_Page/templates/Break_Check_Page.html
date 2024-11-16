@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Break Check{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('Break_Check_Page.static', filename='css/Break_Check_Page.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="break-check-container">
+    <div class="break-image">
+        <img src="{{ url_for('static', filename='media/equation_meme.png') }}" />
+    </div>
+    <div class="break-content">
+        <h2>נראה שלקחת הפסקה...<br>עדיין כאן? אם צריך עזרה, אנחנו תמיד כאן בשבילך!</h2>
+        <div class="break-buttons">
+            <button class="btn">המשך</button>
+            <button class="btn">סיים</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<!--{% block javascripts %}-->
+<!--{% endblock %}-->

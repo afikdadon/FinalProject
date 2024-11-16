@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת תומכת החלטה</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Header.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Footer.css') }}">
+    {% block css %}{% endblock %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="page-container">
+        <!-- HEADER -->
+        <header>
+            <div class="header-content">
+                <h1><a href="/">Geometric Akinator</a></h1>
+                <nav>
+                    <ul>
+                        <li>
+                            <a href="/User_Profile_Page">
+                                <i class="fa-regular fa-circle-user"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="content-wrap">
+            {% block content %}
+            {% endblock %}
+        </main>
+
+        <!-- FOOTER -->
+        <footer>
+            <p>&copy; 2024 כל הזכויות שמורות. מערכת תומכת החלטה לתלמידי תיכון</p>
+        </footer>
+    </div>
+
+    <!--
+        <script src="{{ url_for('static', filename='js/your_page_specific_scripts.js') }}"></script>
+    -->
+</body>
+</html>
