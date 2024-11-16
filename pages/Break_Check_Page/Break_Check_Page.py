@@ -8,6 +8,6 @@ Break_Check_Page_bp = Blueprint(
     template_folder='templates'
 )
 
-@Break_Check_Page_bp.route('/Break_Check_Page')
+@Break_Check_Page_bp.route('/')
 def Break_Check_Page():
     return render_template('Break_Check_Page.html')
