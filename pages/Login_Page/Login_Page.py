@@ -5,7 +5,7 @@ login_page = Blueprint('login_page', __name__,
                       template_folder='templates',
                       static_folder='static')
 
-@login_page.route('/login', methods=['GET', 'POST'])
+@login_page.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
