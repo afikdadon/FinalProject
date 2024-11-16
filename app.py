@@ -7,7 +7,7 @@ app = Flask(__name__)
 # app.register_blueprint(Home_Page_bp)
 
 from pages.Break_Check_Page.Break_Check_Page import Break_Check_Page_bp
-app.register_blueprint(Break_Check_Page_bp, url_prefix='/Break_Check_Page')
+app.register_blueprint(Break_Check_Page_bp)
 
 from pages.Login_Page.Login_Page import login_page
 app.register_blueprint(login_page, url_prefix='/login')
