@@ -17,11 +17,24 @@
                 <h1><a href="/">Geometric Akinator</a></h1>
                 <nav>
                     <ul>
-                        <li>
-                            <a href="{{ url_for('login_page.login') }}">
-                                <i class="fa-regular fa-circle-user"></i>
-                            </a>
-                        </li>
+                        {% if session.get('user') %}
+                            <li>
+                                <a href="{{ url_for('login_page.logout') }}" title="התנתק">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('user_profile_page.profile') }}" title="פרופיל">
+                                    <i class="fa-regular fa-circle-user profile-icon"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a href="{{ url_for('login_page.login') }}" title="התחבר">
+                                    <i class="fa-regular fa-circle-user profile-icon"></i>
+                                </a>
+                            </li>
+                        {% endif %}
                     </ul>
                 </nav>
             </div>
@@ -39,8 +52,8 @@
         </footer>
     </div>
 
-    <!--
-        <script src="{{ url_for('static', filename='js/your_page_specific_scripts.js') }}"></script>
-    -->
+    <!-- Add these script blocks -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>

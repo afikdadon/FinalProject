@@ -1,0 +1,399 @@
+.question-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1rem;
+    direction: rtl;
+    font-family: 'Heebo', sans-serif;
+}
+
+.question-card {
+    background: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    padding: 2.5rem;
+}
+
+.question-content {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.question-text {
+    font-size: 1.8rem;
+    color: #3F4D57;
+    margin-bottom: 2rem;
+}
+
+.answer-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.answer-btn {
+    padding: 1rem;
+    font-size: 1.2rem;
+    background: #4169e1;
+    color: white;
+    border: none;
+    border-radius: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.fixed-buttons {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.theorem-btn {
+    background: #4169e1;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 1rem;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s;
+}
+
+.finish-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 1rem;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    font-family: 'Heebo', sans-serif;
+}
+
+.modal-content {
+    background: white;
+    margin: 10vh auto;
+    padding: 2rem 3rem;
+    width: 90%;
+    max-width: 800px;  /* Increased from 600px for debug modal */
+    border-radius: 1rem;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.modal-buttons button {
+    padding: 0.8rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Heebo', sans-serif;
+}
+
+.modal-buttons button:first-child {
+    background: #dc3545;
+    color: white;
+    border: none;
+}
+
+.modal-buttons button:first-child:hover {
+    background: #c82333;
+}
+
+.modal-buttons button:last-child {
+    background: #6c757d;
+    color: white;
+    border: none;
+}
+
+.modal-buttons button:last-child:hover {
+    background: #5a6268;
+}
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.close {
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.theorem-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    counter-reset: theorem-counter;
+}
+
+.theorem-item {
+    counter-increment: theorem-counter;
+    position: relative;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.theorem-item::before {
+    content: counter(theorem-counter) ".";
+    position: absolute;
+    right: -2rem;
+    top: 1rem;
+    font-weight: bold;
+    color: black;
+}
+
+.theorem-text {
+    margin-right: 2rem;
+    font-weight: bold;
+}
+
+.finish-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.cancel-btn {
+    padding: 0.8rem 1.5rem;
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.confirm-btn {
+    padding: 0.8rem 1.5rem;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.debug-btn {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 1rem;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.debug-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5rem;
+}
+
+.tab-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #666;
+    border-bottom: 2px solid transparent;
+}
+
+.tab-btn.active {
+    color: #4169e1;
+    border-bottom: 2px solid #4169e1;
+}
+
+.tab-content {
+    display: none;
+    padding: 1rem;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.section {
+    margin-bottom: 2rem;
+}
+
+.scrollable {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 1rem;
+}
+
+.current-calculations {
+    font-family: 'Heebo', sans-serif;
+    white-space: pre-wrap;
+    background: #f5f5f5;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+}
+
+.current-calculations h4 {
+    font-family: 'Heebo', sans-serif;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.current-calculations pre {
+    font-family: 'Heebo', sans-serif;
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.question-score-item, .theorem-weight-item {
+    padding: 0.5rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+}
+
+.triangle-weights-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    direction: rtl;
+    text-align: center;
+}
+
+.triangle-weights-table th,
+.triangle-weights-table td {
+    border: 1px solid lightgray;
+    padding: 0.5rem;
+    background: white;
+}
+
+.triangle-weights-table th {
+    background: white;
+    color: black;
+    font-weight: bold;
+}
+
+.timeout-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.timeout-modal.show {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+}
+
+.timeout-modal-content {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.3s ease-out;
+    text-align: center;
+    direction: rtl;
+}
+
+.timeout-modal.show .timeout-modal-content {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.timeout-modal-message {
+    font-size: 1.5rem;
+    color: #3F4D57;
+    margin-bottom: 2rem;
+    font-family: 'Heebo', sans-serif;
+}
+
+.timeout-modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.timeout-btn {
+    padding: 0.8rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Heebo', sans-serif;
+}
+
+.timeout-btn.continue {
+    background: #75975e;
+    color: white;
+    border: none;
+}
+
+.timeout-btn.continue:hover {
+    background: #658354;
+}
+
+.timeout-btn.finish {
+    background: #dc3545;
+    color: white;
+    border: none;
+}
+
+.timeout-btn.finish:hover {
+    background: #c82333;
+}

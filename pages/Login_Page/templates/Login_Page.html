@@ -2,16 +2,17 @@
 
 {% block css %}
 <link rel="stylesheet" href="{{ url_for('login_page.static', filename='css/Login_Page.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 {% endblock %}
 
 {% block content %}
 <div class="login-container">
     <div class="login-image-section">
-        <img src="{{ url_for('static', filename='media/login.png') }}" />
+        <img src="{{ url_for('static', filename='media/login.png') }}" alt="Login Image" />
     </div>
     <div class="login-form">
         <h1>התחברות למערכת</h1>
-        <form method="POST" action="{{ url_for('login_page.login') }}">
+        <form method="POST" action="{{ url_for('login_page.login') }}" id="loginForm" novalidate>
             <div class="form-group">
                 <label for="email">אימייל</label>
                 <input type="email" id="email" name="email" required>
@@ -31,23 +32,12 @@
         </form>
 
         <div class="additional-options">
-            <a href="#" class="forgot-password">שכחת סיסמה? לחץ כאן</a>
-            <a href="#" class="register-link">עדיין לא רשום? פתח חשבון חדש</a>
+            <a href="{{ url_for('registration_page.register') }}" class="register-link">עדיין לא רשום? הירשם כאן</a>
         </div>
     </div>
 </div>
+{% endblock %}
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const togglePassword = document.querySelector('.toggle-password');
-    const passwordInput = document.querySelector('#password');
-
-    togglePassword.addEventListener('click', function() {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        this.querySelector('i').classList.toggle('fa-eye');
-        this.querySelector('i').classList.toggle('fa-eye-slash');
-    });
-});
-</script>
+{% block scripts %}
+<script src="{{ url_for('login_page.static', filename='js/Login_Page.js') }}"></script>
 {% endblock %}

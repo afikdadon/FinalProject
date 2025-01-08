@@ -5,11 +5,11 @@
     justify-content: center;
     align-items: stretch;
     font-family: 'Heebo', sans-serif;
-    gap: 0;
+    gap: 2rem;
 }
 
 .login-form {
-    flex: 0 1 480px;
+    flex: 0 1 600px;
     background-color: #fff;
     padding: 2.5rem;
     border-radius: 1rem;
@@ -17,23 +17,19 @@
 }
 
 .login-image-section {
-    flex: 0 1 700px;
+    flex: 0 1 600px;
     display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
+    justify-content: center;
+    align-items: center;
     border-radius: 1rem;
     min-height: 400px;
     overflow: hidden;
-    padding: 0 1rem;
 }
 
 .login-image-section img {
     max-width: 500px;
     max-height: 500px;
     object-fit: contain;
-    display: block;
-    margin: 0;
-    transform: translateY(-2rem);
 }
 
 .login-form h1 {
@@ -113,17 +109,25 @@ input:focus {
     text-align: center;
 }
 
-.forgot-password, .register-link {
-    display: block;
+.register-link {
     color: #3F4D57;
     text-decoration: none;
-    margin: 0.5rem 0;
     font-size: 14px;
     transition: color 0.3s;
 }
 
-.forgot-password:hover, .register-link:hover {
+.register-link:hover {
     color: #8FD694;
+}
+
+.error-message {
+    color: #ff0000;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+input.error {
+    border-color: #ff0000;
 }
 
 @media screen and (max-width: 768px) {
