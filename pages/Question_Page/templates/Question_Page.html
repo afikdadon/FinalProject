@@ -1,3 +1,4 @@
+<!--   Question_Page.html-->
     {% extends "base.html" %}
 
     {% block css %}
@@ -7,11 +8,17 @@
 
     {% block content %}
     <!-- Theorems Data -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+
     <script id="initial-theorems-data" type="application/json">
         {{ initial_theorems | tojson | safe }}
     </script>
 
-    <div class="question-container" id="questionApp">
+        <div class="content-wrapper">
+            <div class="weights-chart-container">
+                <h3>התפלגות משולשים:</h3>
+                <canvas id="triangleWeightsChart"></canvas>
+            </div>
         <div class="question-card">
             <div class="question-content">
                 <div class="question-image">
@@ -34,6 +41,7 @@
                         </button>
                     </div>
                 </div>
+                   </div>
             </div>
         </div>
 

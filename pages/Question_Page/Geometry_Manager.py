@@ -1,3 +1,4 @@
+# Geometry_Manager.py -  manages the weights of the triangles.
 from typing import Dict, List, Tuple, Optional
 import pyodbc
 import math
@@ -219,7 +220,7 @@ class Geometry_Manager:
             return theorems
 
         print(f"Subsequent question - using threshold logic")
-        increment_factor = 0.1
+        increment_factor = 0.05
         threshold = base_threshold + (num_questions * increment_factor)
 
         # Use a new cursor for each theorem query

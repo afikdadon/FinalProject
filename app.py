@@ -21,28 +21,25 @@ app.config.update(
 bcrypt.init_app(app)
 Session(app)
 
-# Register blueprints in order of priority
-from pages.Break_Check_Page.Break_Check_Page import Break_Check_Page_bp
-app.register_blueprint(Break_Check_Page_bp, url_prefix='/break')
-
-from pages.Login_Page.Login_Page import login_page
-app.register_blueprint(login_page, url_prefix='/login')
+from pages.Home_Page.Home_Page import home_page
+app.register_blueprint(home_page, url_prefix='/')
 
 from pages.Registration_Page.Registration_Page import registration_page
 app.register_blueprint(registration_page, url_prefix='/register')
 
-from pages.Question_Page.Question_Page import question_page
-app.register_blueprint(question_page, url_prefix='/question')
+from pages.Login_Page.Login_Page import login_page
+app.register_blueprint(login_page, url_prefix='/login')
 
 from pages.User_Profile_Page.User_Profile_Page import user_profile_page
 app.register_blueprint(user_profile_page, url_prefix='/profile')
 
+from pages.Question_Page.Question_Page import question_page
+app.register_blueprint(question_page, url_prefix='/question')
+
 from pages.Feedback_Page.Feedback_Page import feedback_page
 app.register_blueprint(feedback_page, url_prefix='/feedback')
 
-# Register home page last as it might have catch-all routes
-from pages.Home_Page.Home_Page import home_page
-app.register_blueprint(home_page, url_prefix='/')
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 10000)))

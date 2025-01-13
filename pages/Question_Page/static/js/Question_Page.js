@@ -1,6 +1,9 @@
+//Question_Page.js
 let currentQuestionId = null;
 let inactivityTimer = null;
 let lastActivityTime = Date.now();
+let triangleChart = null;
+
 
 console.log('Script starting...');
 console.log('Question_Page.js loaded successfully');
@@ -95,6 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     initializeDebugInfo();
     switchTab('weights');
+    initializeTriangleChart();
 });
 
 async function submitAnswer(answer) {
@@ -147,6 +151,10 @@ function updateUI(data) {
     // Update debug info for admin
     if (data.debug) {
         updateDebugInfo(data.debug);
+    }
+
+    if (data.debug?.triangle_weights) {
+        updateTriangleChart(data.debug.triangle_weights);
     }
 }
 
@@ -373,4 +381,60 @@ function continueSession() {
     console.log('User chose to continue');
     hideTimeoutModal();
     resetInactivityTimer();
+}
+
+function initializeTriangleChart() {
+    const ctx = document.getElementById('triangleWeightsChart').getContext('2d');
+
+    triangleChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['משולש כללי', 'משולש שווה צלעות', 'משולש שווה שוקיים', 'משולש ישר זווית'],
+            datasets: [{
+                data: [0.25, 0.25, 0.25, 0.25], // Initial equal weights
+                backgroundColor: ['#559B92', '#A59C95', '#B8508D', '#565A9B'],
+                borderColor: ['#559B92', '#A59C95', '#B8508D', '#565A9B'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${(context.raw * 100).toFixed(1)}%`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 1,
+                    ticks: {
+                        callback: function(value) {
+                            return `${(value * 100)}%`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function updateTriangleChart(weights) {
+    if (!triangleChart) return;
+
+    triangleChart.data.datasets[0].data = [
+        weights[0] || 0,
+        weights[1] || 0,
+        weights[2] || 0,
+        weights[3] || 0
+    ];
+    triangleChart.update();
 }

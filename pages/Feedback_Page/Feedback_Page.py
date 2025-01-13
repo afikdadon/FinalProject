@@ -10,9 +10,7 @@ feedback_page = Blueprint('feedback_page', __name__,
 @feedback_page.route('/')
 def feedback():
     user = session.get('user', None)
-    print("User session at feedback page load:", user)  # Debug log
     if not user:
-        print("No user found, redirecting to login")  # Debug log
         return redirect(url_for('login_page.login'))
     return render_template('Feedback_Page.html')
 
