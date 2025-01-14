@@ -67,16 +67,25 @@ def process_answer():
         UserLogger.log_question_answer(question_id, next_question_text, answer)
         theorems = manager.get_relevant_theorems()
 
-        return jsonify({
+        # Get triangle weights from session for all users
+        triangle_weights = session['geometry_state']['triangle_weights']
+
+        response_data = {
             'success': True,
             'nextQuestion': {
                 'id': next_question_id,
                 'text': next_question_text
             },
             'questionsHistory': questions_history,
-            'debug': debug_info,
-            'theorems': theorems
-        })
+            'theorems': theorems,
+            'triangle_weights': triangle_weights  # Add this for all users
+        }
+
+        # Add debug info only for admin users
+        if session.get('user', {}).get('role') == 'admin':
+            response_data['debug'] = debug_info
+
+        return jsonify(response_data)
     except Exception as e:
         print(f"Error in answer route: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500

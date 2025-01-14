@@ -9,6 +9,10 @@
     {% block content %}
     <!-- Theorems Data -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.0.0/chartjs-plugin-datalabels.min.js"></script>
+    <script>
+        Chart.register(ChartDataLabels);
+    </script>
 
     <script id="initial-theorems-data" type="application/json">
         {{ initial_theorems | tojson | safe }}
@@ -16,7 +20,7 @@
 
         <div class="content-wrapper">
             <div class="weights-chart-container">
-                <h3>התפלגות משולשים:</h3>
+                <h3>התפלגות משולשים</h3>
                 <canvas id="triangleWeightsChart"></canvas>
             </div>
         <div class="question-card">

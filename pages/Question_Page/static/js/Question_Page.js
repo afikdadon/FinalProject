@@ -8,6 +8,70 @@ let triangleChart = null;
 console.log('Script starting...');
 console.log('Question_Page.js loaded successfully');
 
+const TRIANGLE_TYPES = {
+    GENERAL: {
+        name: 'משולש כללי',
+        class: 'triangle-general'
+    },
+    EQUILATERAL: {
+        name: 'משולש שווה צלעות',
+        class: 'triangle-equilateral'
+    },
+    ISOSCELES: {
+        name: 'משולש שווה שוקיים',
+        class: 'triangle-isosceles'
+    },
+    RIGHT: {
+        name: 'משולש ישר זווית',
+        class: 'triangle-right'
+    }
+};
+
+function getTheoremTriangleType(theoremText) {
+    theoremText = theoremText.toLowerCase();
+
+    if (theoremText.includes('ישר זווית') || theoremText.includes('פיתגורס')) {
+        return TRIANGLE_TYPES.RIGHT;
+    } else if (theoremText.includes('שווה צלעות')) {
+        return TRIANGLE_TYPES.EQUILATERAL;
+    } else if (theoremText.includes('שווה שוקיים')) {
+        return TRIANGLE_TYPES.ISOSCELES;
+    }
+    return TRIANGLE_TYPES.GENERAL;
+}
+
+function updateTheoremsModal(theorems) {
+    console.log('Updating theorems modal with:', theorems);
+    const theoremList = document.querySelector('.theorem-list');
+
+    if (theoremList && theorems && theorems.length > 0) {
+        let theoremsHTML = '';
+        theorems.forEach(theorem => {
+            // Handle both array and object formats
+            const text = Array.isArray(theorem) ? theorem[1] : theorem.text;
+            const weight = Array.isArray(theorem) ? theorem[2] : theorem.weight;
+
+            // Determine triangle type based on theorem text
+            const triangleType = getTheoremTriangleType(text);
+
+            theoremsHTML += `
+                <div class="theorem-item">
+                    <div class="theorem-text">
+                        ${text}
+                        <span class="theorem-type ${triangleType.class}">
+                            (${triangleType.name})
+                        </span>
+                    </div>
+                    <div class="theorem-weight">רלוונטיות: ${(weight * 100).toFixed(1)}%</div>
+                </div>
+            `;
+        });
+        theoremList.innerHTML = theoremsHTML;
+    } else {
+        theoremList.innerHTML = '<div class="theorem-item"><div class="theorem-text">אין משפטים רלוונטיים כרגע</div></div>';
+    }
+}
+
 // Debounce function to avoid too frequent resets
 function debounce(func, wait) {
     let timeout;
@@ -153,33 +217,35 @@ function updateUI(data) {
         updateDebugInfo(data.debug);
     }
 
-    if (data.debug?.triangle_weights) {
+    if (data.triangle_weights) {
+        updateTriangleChart(data.triangle_weights);
+    } else if (data.debug?.triangle_weights) {
         updateTriangleChart(data.debug.triangle_weights);
     }
 }
 
-function updateTheoremsModal(theorems) {
-    console.log('Updating theorems modal with:', theorems);
-    const theoremList = document.querySelector('.theorem-list');
-    if (theoremList && theorems && theorems.length > 0) {
-        let theoremsHTML = '';
-        theorems.forEach(theorem => {
-            // Handle both array and object formats
-            const text = Array.isArray(theorem) ? theorem[1] : theorem.text;
-            const weight = Array.isArray(theorem) ? theorem[2] : theorem.weight;
-
-            theoremsHTML += `
-                <div class="theorem-item">
-                    <div class="theorem-text">${text}</div>
-                    <div class="theorem-weight">רלוונטיות: ${(weight * 100).toFixed(1)}%</div>
-                </div>
-            `;
-        });
-        theoremList.innerHTML = theoremsHTML;
-    } else {
-        theoremList.innerHTML = '<div class="theorem-item"><div class="theorem-text">אין משפטים רלוונטיים כרגע</div></div>';
-    }
-}
+// function updateTheoremsModal(theorems) {
+//     console.log('Updating theorems modal with:', theorems);
+//     const theoremList = document.querySelector('.theorem-list');
+//     if (theoremList && theorems && theorems.length > 0) {
+//         let theoremsHTML = '';
+//         theorems.forEach(theorem => {
+//             // Handle both array and object formats
+//             const text = Array.isArray(theorem) ? theorem[1] : theorem.text;
+//             const weight = Array.isArray(theorem) ? theorem[2] : theorem.weight;
+//
+//             theoremsHTML += `
+//                 <div class="theorem-item">
+//                     <div class="theorem-text">${text}</div>
+//                     <div class="theorem-weight">רלוונטיות: ${(weight * 100).toFixed(1)}%</div>
+//                 </div>
+//             `;
+//         });
+//         theoremList.innerHTML = theoremsHTML;
+//     } else {
+//         theoremList.innerHTML = '<div class="theorem-item"><div class="theorem-text">אין משפטים רלוונטיים כרגע</div></div>';
+//     }
+// }
 
 function switchTab(tabName) {
     document.querySelectorAll('.tab-content').forEach(tab => {
@@ -391,7 +457,7 @@ function initializeTriangleChart() {
         data: {
             labels: ['משולש כללי', 'משולש שווה צלעות', 'משולש שווה שוקיים', 'משולש ישר זווית'],
             datasets: [{
-                data: [0.25, 0.25, 0.25, 0.25], // Initial equal weights
+                data: [0.25, 0.25, 0.25, 0.25],
                 backgroundColor: ['#559B92', '#A59C95', '#B8508D', '#565A9B'],
                 borderColor: ['#559B92', '#A59C95', '#B8508D', '#565A9B'],
                 borderWidth: 1
@@ -400,29 +466,60 @@ function initializeTriangleChart() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    top: 20,
+                }
+            },
             plugins: {
                 legend: {
                     display: false
                 },
                 tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return `${(context.raw * 100).toFixed(1)}%`;
-                        }
-                    }
+                    enabled: false
+                },
+                datalabels: {
+                    color: '#636363',
+                    anchor: 'end',
+                    align: 'top',
+                    offset: 0,
+                    font: {
+                        weight: 'bold',
+                        size: 14
+                    },
+                    formatter: function(value) {
+                        return (value * 100).toFixed(1) + '%';
+                    },
+                    clamp: true,
+                    clip: false,
+                    textAlign: 'center'
                 }
             },
             scales: {
                 y: {
+                    display: false,
                     beginAtZero: true,
-                    max: 1,
+                    max: 1.1
+                },
+                x: {
                     ticks: {
-                        callback: function(value) {
-                            return `${(value * 100)}%`;
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        },
+                        autoSkip: false,
+                        maxRotation: 0,
+                        minRotation: 0,
+                        padding: 10,
+                        callback: function (value) {
+                            const label = this.getLabelForValue(value);
+                            const words = label.split(' ');
+                            return words;
                         }
                     }
                 }
-            }
+            },
+            barThickness: 40
         }
     });
 }
