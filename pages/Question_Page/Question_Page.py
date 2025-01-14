@@ -66,7 +66,11 @@ def process_answer():
 
         UserLogger.log_question_answer(question_id, next_question_text, answer)
         theorems = manager.get_relevant_theorems()
-
+        formatted_theorems = [{
+            'id': theorem[0],
+            'text': theorem[1],
+            'weight': theorem[2]
+        } for theorem in theorems]
         # Get triangle weights from session for all users
         triangle_weights = session['geometry_state']['triangle_weights']
 
@@ -77,13 +81,15 @@ def process_answer():
                 'text': next_question_text
             },
             'questionsHistory': questions_history,
-            'theorems': theorems,
-            'triangle_weights': triangle_weights  # Add this for all users
+            'theorems': formatted_theorems,
+            'triangle_weights': triangle_weights
         }
 
         # Add debug info only for admin users
         if session.get('user', {}).get('role') == 'admin':
             response_data['debug'] = debug_info
+
+
 
         return jsonify(response_data)
     except Exception as e:

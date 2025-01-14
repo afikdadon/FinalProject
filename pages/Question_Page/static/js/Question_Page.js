@@ -5,6 +5,8 @@ let lastActivityTime = Date.now();
 let triangleChart = null;
 let questionAnswerCount = 0;
 let tooltipTimer = null;
+let highRelevanceModal = null;
+let currentHighRelevanceTheorems = new Set();
 
 
 console.log('Script starting...');
@@ -42,9 +44,46 @@ function getTheoremTriangleType(theoremText) {
     return TRIANGLE_TYPES.GENERAL;
 }
 
+function initializeHighRelevanceModal() {
+    highRelevanceModal = document.getElementById('highRelevanceModal');
+
+    // Add click event for close button
+    const closeBtn = document.querySelector('.close-relevance');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', hideHighRelevanceModal);
+    }
+}
+
+function showHighRelevanceModal(theorems) {
+    const modal = document.getElementById('highRelevanceModal');
+    const theoremsContainer = modal.querySelector('.high-relevance-theorems');
+
+    // Clear previous content
+    theoremsContainer.innerHTML = '';
+
+    // Add each theorem
+    theorems.forEach(theorem => {
+        const theoremDiv = document.createElement('div');
+        theoremDiv.className = 'high-relevance-theorem';
+        theoremDiv.textContent = theorem.text;
+        theoremsContainer.appendChild(theoremDiv);
+    });
+
+    // Show the modal with animation
+    modal.classList.add('show');
+}
+
+function hideHighRelevanceModal() {
+    const modal = document.getElementById('highRelevanceModal');
+    modal.classList.remove('show');
+}
+
+// Modify your existing updateTheoremsModal function to check for high relevance theorems
 function updateTheoremsModal(theorems) {
     console.log('Updating theorems modal with:', theorems);
     const theoremList = document.querySelector('.theorem-list');
+
+    let highRelevanceTheorems = [];
 
     if (theoremList && theorems && theorems.length > 0) {
         let theoremsHTML = '';
@@ -52,6 +91,18 @@ function updateTheoremsModal(theorems) {
             // Handle both array and object formats
             const text = Array.isArray(theorem) ? theorem[1] : theorem.text;
             const weight = Array.isArray(theorem) ? theorem[2] : theorem.weight;
+
+            // Check for high relevance (90% or higher)
+            if (weight >= 0.9) {
+                const theoremKey = Array.isArray(theorem) ? theorem[0] : theorem.id;
+                if (!currentHighRelevanceTheorems.has(theoremKey)) {
+                    highRelevanceTheorems.push({
+                        id: theoremKey,
+                        text: text
+                    });
+                    currentHighRelevanceTheorems.add(theoremKey);
+                }
+            }
 
             // Determine triangle type based on theorem text
             const triangleType = getTheoremTriangleType(text);
@@ -69,6 +120,11 @@ function updateTheoremsModal(theorems) {
             `;
         });
         theoremList.innerHTML = theoremsHTML;
+
+        // Show high relevance modal if we have new highly relevant theorems
+        if (highRelevanceTheorems.length > 0) {
+            showHighRelevanceModal(highRelevanceTheorems);
+        }
     } else {
         theoremList.innerHTML = '<div class="theorem-item"><div class="theorem-text">אין משפטים רלוונטיים כרגע</div></div>';
     }
@@ -165,6 +221,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeDebugInfo();
     switchTab('weights');
     initializeTriangleChart();
+    initializeHighRelevanceModal();
+
 });
 
 async function submitAnswer(answer) {
