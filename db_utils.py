@@ -69,3 +69,14 @@ def create_user(first_name, last_name, email, password):
     except Exception as e:
         print(f"Database error in create_user: {str(e)}")
         return False
+
+    def verify_email_exists(email):
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute('SELECT user_id FROM Users WHERE email = ?', (email,))
+            user = cursor.fetchone()
+            return bool(user)
+        finally:
+            cursor.close()
+            conn.close()

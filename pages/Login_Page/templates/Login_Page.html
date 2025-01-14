@@ -1,3 +1,4 @@
+<!--Login_Page.html-->
 {% extends "base.html" %}
 
 {% block css %}
@@ -33,6 +34,8 @@
 
         <div class="additional-options">
             <a href="{{ url_for('registration_page.register') }}" class="register-link">עדיין לא רשום? הירשם כאן</a>
+            <br>
+            <a href="{{ url_for('login_page.forgot_password') }}" class="forgot-password-link">שכחת סיסמה?</a>
         </div>
     </div>
 </div>

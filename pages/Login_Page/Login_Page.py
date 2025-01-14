@@ -1,7 +1,11 @@
 # Login_Page.py
 from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify
-from db_utils import verify_user
+from flask_bcrypt import generate_password_hash
+from db_utils import verify_user, get_db_connection
 from UserLogger import UserLogger
+from email_utils import EmailUtils
+from datetime import datetime
+
 
 login_page = Blueprint('login_page', __name__,
                        template_folder='templates',
@@ -50,3 +54,126 @@ def logout():
     UserLogger.log_logout()
     session.pop('user', None)
     return redirect(url_for('home_page.home'))
+
+
+@login_page.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+
+        if not email:
+            return jsonify({
+                'success': False,
+                'error': 'נא להזין כתובת אימייל'
+            })
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            # Check if email exists
+            cursor.execute('SELECT user_id FROM Users WHERE email = ?', (email,))
+            user = cursor.fetchone()
+
+            if not user:
+                return jsonify({
+                    'success': False,
+                    'error': 'לא נמצא משתמש עם כתובת האימייל הזו'
+                })
+
+            # Generate reset token and expiry
+            reset_token = EmailUtils.generate_reset_token()
+            token_expiry = EmailUtils.get_token_expiry()
+
+            # Update user record with reset token
+            cursor.execute('''
+                UPDATE Users 
+                SET reset_token = ?, reset_token_expiry = ?
+                WHERE email = ?
+            ''', (reset_token, token_expiry, email))
+            conn.commit()
+
+            # Send reset email
+            if EmailUtils.send_reset_email(email, reset_token):
+                return jsonify({'success': True})
+            else:
+                return jsonify({
+                    'success': False,
+                    'error': 'אירעה שגיאה בשליחת האימייל'
+                })
+
+        except Exception as e:
+            print(f"Password reset error: {str(e)}")
+            return jsonify({
+                'success': False,
+                'error': 'אירעה שגיאה. אנא נסה שנית מאוחר יותר'
+            }), 500
+        finally:
+            cursor.close()
+            conn.close()
+
+    return render_template('forgot_password.html')
+
+
+@login_page.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if request.method == 'POST':
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+
+        if not all([new_password, confirm_password]):
+            return jsonify({
+                'success': False,
+                'error': 'נא למלא את כל השדות'
+            })
+
+        if new_password != confirm_password:
+            return jsonify({
+                'success': False,
+                'error': 'הסיסמאות אינן תואמות'
+            })
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            # Verify token and check expiry
+            cursor.execute('''
+                SELECT user_id 
+                FROM Users 
+                WHERE reset_token = ? AND reset_token_expiry > ?
+            ''', (token, datetime.now()))
+            user = cursor.fetchone()
+
+            if not user:
+                return jsonify({
+                    'success': False,
+                    'error': 'הקישור לאיפוס הסיסמה אינו תקף או שפג תוקפו'
+                })
+
+            # Hash the new password using the existing hash_password function
+            from db_utils import hash_password
+            password_hash = hash_password(new_password)
+
+            # Update password and clear reset token
+            cursor.execute('''
+                UPDATE Users 
+                SET password_hash = ?, reset_token = NULL, reset_token_expiry = NULL
+                WHERE user_id = ?
+            ''', (password_hash, user[0]))
+            conn.commit()
+
+            return jsonify({'success': True})
+
+        except Exception as e:
+            print(f"Password reset error: {str(e)}")
+            return jsonify({
+                'success': False,
+                'error': 'אירעה שגיאה. אנא נסה שנית מאוחר יותר'
+            }), 500
+        finally:
+            cursor.close()
+            conn.close()
+
+    # GET request - show reset password form
+    return render_template('reset_password.html', token=token)

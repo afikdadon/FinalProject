@@ -161,6 +161,85 @@
     font-size: 1.2em;
 }
 
+/* Feedback Section */
+.feedback-section {
+    margin: 4rem 0;
+    padding: 2rem;
+}
+
+.feedback-container {
+    background: linear-gradient(135deg, #4169e1 0%, #5c85f7 100%);
+    border-radius: 1.5rem;
+    padding: 1rem 2rem;
+    text-align: center;
+    color: white;
+    box-shadow: 0 4px 12px rgba(65, 105, 225, 0.2);
+}
+
+.feedback-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.feedback-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.feedback-content h2 {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.feedback-content p {
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.feedback-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem 2.5rem;
+    font-size: 1.2rem;
+    background-color: white;
+    color: #4169e1;
+    border: none;
+    border-radius: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.feedback-btn:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .feedback-section {
+        margin: 3rem 0;
+        padding: 1rem;
+    }
+
+    .feedback-container {
+        padding: 2rem 1rem;
+    }
+
+    .feedback-content h2 {
+        font-size: 1.8rem;
+    }
+
+    .feedback-content p {
+        font-size: 1.1rem;
+    }
+}
+
+
 /* Call to Action Section */
 .cta-section {
     text-align: center;

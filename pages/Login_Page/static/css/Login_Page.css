@@ -1,3 +1,4 @@
+/*Login_Page.css*/
 .login-container {
     display: flex;
     min-height: calc(100vh - 160px);
@@ -129,6 +130,41 @@ input:focus {
 input.error {
     border-color: #ff0000;
 }
+
+/*forgot password*/
+.forgot-password-link {
+    display: block;
+    color: #3F4D57;
+    text-decoration: none;
+    font-size: 14px;
+    margin-top: 1rem;
+    transition: color 0.3s;
+}
+
+.forgot-password-link:hover {
+    color: #8FD694;
+}
+
+.back-to-login {
+    color: #3F4D57;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s;
+}
+
+.back-to-login:hover {
+    color: #8FD694;
+}
+
+.success-message {
+    text-align: center;
+    color: #4CAF50;
+    padding: 20px;
+    background-color: #E8F5E9;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
 
 @media screen and (max-width: 768px) {
     .login-container {

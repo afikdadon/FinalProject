@@ -1,9 +1,8 @@
-// Login_Page.js
+// Reset_Password.js
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Login JavaScript loaded');
-    const form = document.getElementById('loginForm');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
+    const form = document.getElementById('resetPasswordForm');
+    const newPasswordInput = document.getElementById('new_password');
+    const confirmPasswordInput = document.getElementById('confirm_password');
 
     // Toggle password visibility
     document.querySelectorAll('.toggle-password').forEach(button => {
@@ -17,7 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Show error message
     function showError(input, message) {
         const formGroup = input.closest('.form-group');
         let errorDiv = formGroup.querySelector('.error-message');
@@ -32,7 +30,6 @@ document.addEventListener('DOMContentLoaded', function() {
         input.classList.add('error');
     }
 
-    // Clear error message
     function clearError(input) {
         const formGroup = input.closest('.form-group');
         const errorDiv = formGroup.querySelector('.error-message');
@@ -42,17 +39,11 @@ document.addEventListener('DOMContentLoaded', function() {
         input.classList.remove('error');
     }
 
-    // Clear all errors
-    function clearAllErrors() {
-        document.querySelectorAll('.error-message').forEach(err => err.remove());
-        document.querySelectorAll('.error').forEach(input => input.classList.remove('error'));
-    }
-
-    // Form submission
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
+        clearError(newPasswordInput);
+        clearError(confirmPasswordInput);
 
-        clearAllErrors();
         const formData = new FormData(form);
 
         try {
@@ -64,30 +55,33 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
 
             if (result.success) {
-                window.location.href = '/';  // Redirect to home page after successful login
+                // Replace form with success message and redirect
+                form.innerHTML = `
+                    <div class="success-message">
+                        <p>הסיסמה עודכנה בהצלחה!</p>
+                        <p>מעביר אותך לדף ההתחברות...</p>
+                    </div>`;
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 3000);
             } else {
-                // Show error message under the relevant field
-                if (result.error.includes('אימייל')) {
-                    showError(emailInput, result.error);
-                } else if (result.error.includes('סיסמה')) {
-                    showError(passwordInput, result.error);
+                if (result.error.includes('תואמות')) {
+                    showError(confirmPasswordInput, result.error);
                 } else {
-                    // Show general error under email input
-                    showError(emailInput, result.error);
+                    showError(newPasswordInput, result.error);
                 }
             }
         } catch (error) {
             console.error('Error:', error);
-            showError(emailInput, 'אירעה שגיאה. אנא נסה שנית מאוחר יותר');
+            showError(newPasswordInput, 'אירעה שגיאה. אנא נסה שנית מאוחר יותר');
         }
     });
 
-    // Real-time validation
-    emailInput.addEventListener('input', () => {
-        clearError(emailInput);
+    newPasswordInput.addEventListener('input', () => {
+        clearError(newPasswordInput);
     });
 
-    passwordInput.addEventListener('input', () => {
-        clearError(passwordInput);
+    confirmPasswordInput.addEventListener('input', () => {
+        clearError(confirmPasswordInput);
     });
 });
