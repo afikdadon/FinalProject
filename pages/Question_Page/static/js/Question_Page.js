@@ -3,6 +3,8 @@ let currentQuestionId = null;
 let inactivityTimer = null;
 let lastActivityTime = Date.now();
 let triangleChart = null;
+let questionAnswerCount = 0;
+let tooltipTimer = null;
 
 
 console.log('Script starting...');
@@ -181,15 +183,24 @@ async function submitAnswer(answer) {
                 answer: answer
             })
         });
+
         if (!response.ok) {
             const errorData = await response.json();
             alert(`Error: ${errorData.error}`);
             return;
         }
+
         const data = await response.json();
         if (data.success) {
+            questionAnswerCount++;
+
+            // Show tooltip every 5 questions
+            if (questionAnswerCount % 5 === 0) {
+                showTheoremsTooltip();
+            }
+
             updateUI(data);
-            resetInactivityTimer(); // Reset timer after successful answer
+            resetInactivityTimer();
         } else {
             console.error('Error:', data.error);
         }
@@ -534,4 +545,34 @@ function updateTriangleChart(weights) {
         weights[3] || 0
     ];
     triangleChart.update();
+}
+
+function showTheoremsTooltip() {
+    const tooltip = document.getElementById('theoremTooltip');
+    tooltip.classList.remove('hidden');
+    tooltip.classList.add('visible');
+
+    // Hide after 1 minute
+    if (tooltipTimer) {
+        clearTimeout(tooltipTimer);
+    }
+    tooltipTimer = setTimeout(() => {
+        hideTheoremsTooltip();
+    }, 60000); // 60 seconds
+}
+
+function hideTheoremsTooltip() {
+    const tooltip = document.getElementById('theoremTooltip');
+    tooltip.classList.remove('visible');
+    tooltip.classList.add('hidden');
+    if (tooltipTimer) {
+        clearTimeout(tooltipTimer);
+        tooltipTimer = null;
+    }
+}
+
+function toggleTheorems() {
+    const modal = document.getElementById('theoremsModal');
+    modal.style.display = modal.style.display === 'none' ? 'block' : 'none';
+    hideTheoremsTooltip(); // Hide tooltip when theorems are viewed
 }
