@@ -118,7 +118,7 @@ def finish_session():
         # Return success with redirect URL
         return jsonify({
             'success': True,
-            'redirect': url_for('feedback_page.feedback')
+            'redirect': url_for('home_page.home')
         })
     except Exception as e:
         print(f"Error in finish_session: {str(e)}")
