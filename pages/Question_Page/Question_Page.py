@@ -55,7 +55,8 @@ def process_answer():
 
     try:
         manager = Geometry_Manager()
-        manager.process_answer(question_id, answer)
+        (manager.
+         process_answer(question_id, answer))
 
         next_question_id, next_question_text, debug_info = manager.get_next_question(
             is_admin=(session.get('user', {}).get('role') == 'admin')

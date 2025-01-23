@@ -62,25 +62,6 @@ class Geometry_Manager:
         session.modified = True
         print(f"Updated last_activity_time to: {current_time}")
 
-    def process_answer(self, question_id: int, answer: str):
-        state = session['geometry_state']
-        cursor = self.conn.cursor()
-
-        # Get question text
-        cursor.execute("SELECT question_text FROM Questions WHERE question_id = ?", (question_id,))
-        question_text = cursor.fetchone()[0]
-
-        # Append new question
-        state['asked_questions'].append(question_id)
-        state['asked_questions_texts'].append(question_text)
-        state['questions_count'] = len(state['asked_questions'])
-
-        # Update weights
-        self._update_triangle_weights(question_id, answer)
-        self._update_theorem_weights()
-        self.update_activity_time()
-        session.modified = True
-
     def get_questions_history(self) -> dict:
         state = session['geometry_state']
         return {
@@ -106,9 +87,29 @@ class Geometry_Manager:
             for question in all_questions:
                 question_id = question[0]
                 if question_id not in excluded_questions:
-                    info_gain = self._calculate_information_gain(question_id)
-                    theorem_weight = self._get_theorem_weight_for_question(question_id)
-                    question_scores[question_id] = info_gain * (1 + theorem_weight)
+                    # Check triangle relevance first
+                    cursor.execute("""
+                        SELECT DISTINCT ttm.triangle_id, ttm.connection_strength
+                        FROM TheoremQuestionMatrix tqm
+                        JOIN TheoremTriangleMatrix ttm ON tqm.theorem_id = ttm.theorem_id
+                        WHERE tqm.question_id = ? AND tqm.relevance = 1
+                    """, (question_id,))
+
+                    # Calculate triangle relevance
+                    triangle_relevance = 0
+                    has_valid_triangle = False
+                    for triangle_id, strength in cursor.fetchall():
+                        triangle_weight = state['triangle_weights'].get(triangle_id, 0)
+                        if triangle_weight > 0:
+                            has_valid_triangle = True
+                            triangle_relevance += strength * triangle_weight
+
+                    # Only score questions that are relevant to triangles with non-zero weights
+                    if has_valid_triangle:
+                        info_gain = self._calculate_information_gain(question_id)
+                        theorem_weight = self._get_theorem_weight_for_question(question_id)
+                        # Modified scoring formula that prioritizes triangle relevance
+                        question_scores[question_id] = info_gain * theorem_weight * (1 + triangle_relevance)
 
             if not question_scores:
                 return None, None, debug_info
@@ -136,6 +137,7 @@ class Geometry_Manager:
         self._update_theorem_weights()
         self.update_activity_time()
         session.modified = True
+
 
     def get_debug_info(self) -> Dict:
         state = session.get('geometry_state', {})
@@ -199,14 +201,10 @@ class Geometry_Manager:
         state = session['geometry_state']
         num_questions = len(state['asked_questions'])
 
-        print("\n=== Debug: get_relevant_theorems ===")
-        print(f"Number of questions asked: {num_questions}")
-
         cursor = self.conn.cursor()
         theorems = []
 
         if num_questions == 1:
-            print("First question - fetching all active theorems")
             cursor.execute("SELECT theorem_id, theorem_text FROM Theorems WHERE active = 1")
             all_theorems = cursor.fetchall()
             cursor.close()
@@ -219,7 +217,6 @@ class Geometry_Manager:
             theorems = [(theorem_id, theorem_text, weight) for theorem_id, theorem_text in all_theorems]
             return theorems
 
-        print(f"Subsequent question - using threshold logic")
         increment_factor = 0.05
         threshold = base_threshold + (num_questions * increment_factor)
 
@@ -298,16 +295,16 @@ class Geometry_Manager:
             entropy = self._calculate_entropy(list(new_weights.values()))
             p_answer = 1.0 / len(possible_answers)
             expected_entropy += p_answer * entropy
-            # print(f"Answer: {answer_type}")
-            # print(f"Simulated weights: {new_weights}")
-            # print(f"Entropy for this answer: {entropy}")
 
         ig = current_entropy - expected_entropy
-        # print(f"Final Information Gain for question {question_id}: {ig}")
         return ig
 
     def _calculate_entropy(self, probabilities: List[float]) -> float:
-        return -sum(p * math.log2(p) if p > 0 else 0 for p in probabilities)
+        # Filter out zero probabilities before calculating entropy
+        non_zero_probs = [p for p in probabilities if p > 0]
+        if not non_zero_probs:
+            return 0
+        return -sum(p * math.log2(p) if p > 0 else 0 for p in non_zero_probs)
 
     def _update_triangle_weights(self, question_id: int, answer: str):
         state = session['geometry_state']
@@ -359,6 +356,7 @@ class Geometry_Manager:
         state = session['geometry_state']
         cursor = self.conn.cursor()
 
+        # First get theorems related to this question
         cursor.execute("""
             SELECT theorem_id 
             FROM TheoremQuestionMatrix 
@@ -366,12 +364,24 @@ class Geometry_Manager:
         """, (question_id,))
 
         related_theorems = cursor.fetchall()
-        weight_sum = sum(state['theorem_weights'].get(theorem[0], 0) for theorem in related_theorems)
 
-        # Add normalization
-        if weight_sum > 0:
-            return min(weight_sum, 1.0)  # Cap at 1.0
-        return 0.0
+        # Get the triangle weights for each theorem
+        weight_sum = 0
+        for theorem in related_theorems:
+            theorem_id = theorem[0]
+            cursor.execute("""
+                SELECT triangle_id, connection_strength 
+                FROM TheoremTriangleMatrix 
+                WHERE theorem_id = ?
+            """, (theorem_id,))
+
+            # For each theorem, consider only triangles with non-zero weights
+            for triangle_id, strength in cursor.fetchall():
+                triangle_weight = state['triangle_weights'].get(triangle_id, 0)
+                if triangle_weight > 0:
+                    weight_sum += strength * triangle_weight
+
+        return min(weight_sum, 1.0)
 
     def _simulate_answer_weights(self, question_id: int, answer: str) -> Dict[int, float]:
         state = session['geometry_state']
@@ -410,3 +420,29 @@ class Geometry_Manager:
             'last_activity_time': datetime.now().isoformat()
         }
         session.modified = True
+
+        def _get_question_triangle_relevance(self, question_id: int) -> float:
+            state = session['geometry_state']
+            cursor = self.conn.cursor()
+
+            # Get all theorems related to this question
+            cursor.execute("""
+                SELECT DISTINCT t.theorem_id, t.category, ttm.triangle_id, ttm.connection_strength
+                FROM TheoremQuestionMatrix tqm
+                JOIN Theorems t ON tqm.theorem_id = t.theorem_id
+                JOIN TheoremTriangleMatrix ttm ON t.theorem_id = ttm.theorem_id
+                WHERE tqm.question_id = ? AND tqm.relevance = 1
+            """, (question_id,))
+
+            relevance_scores = {0: 0, 1: 0, 2: 0, 3: 0}  # Initialize scores for each triangle type
+
+            for _, _, triangle_id, strength in cursor.fetchall():
+                relevance_scores[triangle_id] += strength
+
+            # Calculate weighted relevance based on current triangle probabilities
+            total_relevance = 0
+            for triangle_id, score in relevance_scores.items():
+                triangle_weight = state['triangle_weights'].get(triangle_id, 0)
+                total_relevance += score * triangle_weight
+
+            return total_relevance
