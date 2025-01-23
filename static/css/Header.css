@@ -58,6 +58,41 @@ nav ul li a {
     transform: scale(1.1);
 }
 
+.contact-icon a {
+    position: relative;
+    color: white;
+    text-decoration: none;
+    font-size: 30px;
+    padding: 10px;
+    transition: transform 0.1s, color 0.2s;
+}
+
+
+
+.contact-icon a::after {
+    content: "צור קשר";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 5px;
+    opacity: 0;
+    visibility: hidden;
+    background-color: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+
+.contact-icon a:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
 @media screen and (max-width: 768px) {
     header {
         padding: 8px 15px;

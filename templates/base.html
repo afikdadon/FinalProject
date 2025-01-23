@@ -12,33 +12,39 @@
 <body>
     <div class="page-container">
         <!-- HEADER -->
-        <header>
-            <div class="header-content">
-                <h1><a href="/">Geometric Akinator</a></h1>
-                <nav>
-                    <ul>
-                        {% if session.get('user') %}
-                            <li>
-                                <a href="{{ url_for('login_page.logout') }}" title="התנתק">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ url_for('user_profile_page.profile') }}" title="פרופיל">
-                                    <i class="fa-regular fa-circle-user profile-icon"></i>
-                                </a>
-                            </li>
-                        {% else %}
-                            <li>
-                                <a href="{{ url_for('login_page.login') }}" title="התחבר">
-                                    <i class="fa-regular fa-circle-user profile-icon"></i>
-                                </a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            </div>
-        </header>
+    <header>
+    <div class="header-content">
+        <h1><a href="/">Geometric Akinator</a></h1>
+        <nav>
+            <ul>
+                <li class="contact-icon">
+                    <a href="{{ url_for('contact_page.contact') }}" title="צור קשר">
+                        <i class="fa-solid fa-envelope"></i>
+                    </a>
+                </li>
+
+                {% if session.get('user') %}
+                    <li>
+                        <a href="{{ url_for('login_page.logout') }}" title="התנתק">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('user_profile_page.profile') }}" title="פרופיל">
+                            <i class="fa-regular fa-circle-user profile-icon"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li>
+                        <a href="{{ url_for('login_page.login') }}" title="התחבר">
+                            <i class="fa-regular fa-circle-user profile-icon"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</header>
 
         <!-- MAIN CONTENT -->
         <main class="content-wrap">

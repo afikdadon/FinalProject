@@ -39,6 +39,11 @@ app.register_blueprint(question_page, url_prefix='/question')
 from pages.Feedback_Page.Feedback_Page import feedback_page
 app.register_blueprint(feedback_page, url_prefix='/feedback')
 
+from pages.Contact_Page.Contact_Page import contact_page
+app.register_blueprint(contact_page, url_prefix='/contact')
+
+
+
 
 
 if __name__ == '__main__':
