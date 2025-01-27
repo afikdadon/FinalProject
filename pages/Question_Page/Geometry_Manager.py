@@ -70,13 +70,46 @@ class Geometry_Manager:
             'questions_count': state['questions_count']
         }
 
+    def _get_easy_questions(self):
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT question_id, question_text 
+            FROM Questions 
+            WHERE difficulty_level = 1 AND active = 1
+        """)
+        return cursor.fetchall()
+
     def get_next_question(self, is_admin: bool = False) -> Tuple[Optional[int], Optional[str], Optional[Dict]]:
         state = session['geometry_state']
         debug_info = self.get_debug_info() if is_admin else None
 
         try:
             self.update_activity_time()
+
+            # Check if this is the first question
+            if len(state['asked_questions']) == 0:
+                # Get all easy questions
+                easy_questions = self._get_easy_questions()
+                if not easy_questions:
+                    return None, None, debug_info
+
+                # Randomly select one easy question
+                import random
+                selected_question = random.choice(easy_questions)
+                question_id = selected_question[0]
+                question_text = selected_question[1]
+
+                # Update session state
+                state['asked_questions'].append(question_id)
+                state['asked_questions_texts'].append(question_text)
+                state['questions_count'] = len(state['asked_questions'])
+                session.modified = True
+
+                return question_id, question_text, debug_info
+
+            # Original logic for subsequent questions
             cursor = self.conn.cursor()
+            self.update_activity_time()
             cursor.execute("SELECT question_id, question_text FROM Questions WHERE active = 1")
             all_questions = cursor.fetchall()
 
@@ -197,7 +230,7 @@ class Geometry_Manager:
 
         return debug_info
 
-    def get_relevant_theorems(self, base_threshold: float = 0.01) -> List[Tuple[int, str, float]]:
+    def get_relevant_theorems(self, base_threshold: float = 0.01) -> List[Tuple[int, str, float, int]]:
         state = session['geometry_state']
         num_questions = len(state['asked_questions'])
 
@@ -205,7 +238,7 @@ class Geometry_Manager:
         theorems = []
 
         if num_questions == 1:
-            cursor.execute("SELECT theorem_id, theorem_text FROM Theorems WHERE active = 1")
+            cursor.execute("SELECT theorem_id, theorem_text, category FROM Theorems WHERE active = 1")
             all_theorems = cursor.fetchall()
             cursor.close()
 
@@ -214,21 +247,33 @@ class Geometry_Manager:
                 return []
 
             weight = 0.01
-            theorems = [(theorem_id, theorem_text, weight) for theorem_id, theorem_text in all_theorems]
+            theorems = [(theorem_id, theorem_text, weight, category) for theorem_id, theorem_text, category in
+                        all_theorems]
             return theorems
 
         increment_factor = 0.05
         threshold = base_threshold + (num_questions * increment_factor)
+        print(f"Current threshold for theorem selection: {threshold}")
 
         # Use a new cursor for each theorem query
         for theorem_id, weight in state['theorem_weights'].items():
             if weight >= threshold:
                 with self.conn.cursor() as theorem_cursor:
-                    theorem_cursor.execute("SELECT theorem_text FROM Theorems WHERE theorem_id = ?", (theorem_id,))
-                    theorem_text = theorem_cursor.fetchone()[0]
-                    theorems.append((theorem_id, theorem_text, weight))
+                    theorem_cursor.execute("SELECT theorem_text, category FROM Theorems WHERE theorem_id = ?",
+                                           (theorem_id,))
+                    theorem_data = theorem_cursor.fetchone()
+                    theorem_text = theorem_data[0]
+                    category = theorem_data[1]
+                    theorems.append((theorem_id, theorem_text, weight, category))
+                    print(
+                        f"Selected theorem {theorem_id}: weight = {weight:.4f}, text = {theorem_text}, category = {category}")
 
-        return sorted(theorems, key=lambda x: x[2], reverse=True)
+        sorted_theorems = sorted(theorems, key=lambda x: x[2], reverse=True)
+        print("\nFinal sorted theorems:")
+        for t_id, t_text, t_weight, t_category in sorted_theorems:
+            print(f"Theorem {t_id}: {t_weight:.4f} - {t_text} (category: {t_category})")
+
+        return sorted_theorems
 
     def _get_available_questions(self) -> List[Tuple[int, str]]:
         state = session['geometry_state']
@@ -344,10 +389,24 @@ class Geometry_Manager:
         """)
 
         new_weights = {}
+        theorem_connections = {}
         for theorem_id, triangle_id, strength in cursor.fetchall():
-            if theorem_id not in new_weights:
+            if theorem_id not in theorem_connections:
+                theorem_connections[theorem_id] = []
+            if strength >= 0.9:  # Only consider strong connections (e.g., 1.0)
+                theorem_connections[theorem_id].append((triangle_id, strength))
+
+        for theorem_id, connections in theorem_connections.items():
+            if not connections:
                 new_weights[theorem_id] = 0
-            new_weights[theorem_id] += state['triangle_weights'][triangle_id] * strength
+                continue
+
+            # Use multiplication only for required properties
+            weight = 1.0
+            for triangle_id, strength in connections:
+                weight *= state['triangle_weights'][triangle_id]
+
+            new_weights[theorem_id] = weight
 
         state['theorem_weights'] = new_weights
         session.modified = True

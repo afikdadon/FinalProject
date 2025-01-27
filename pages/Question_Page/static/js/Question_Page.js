@@ -13,35 +13,73 @@ console.log('Script starting...');
 console.log('Question_Page.js loaded successfully');
 
 const TRIANGLE_TYPES = {
-    GENERAL: {
+    0: {
         name: 'משולש כללי',
         class: 'triangle-general'
     },
-    EQUILATERAL: {
+    1: {
         name: 'משולש שווה צלעות',
         class: 'triangle-equilateral'
     },
-    ISOSCELES: {
+    2: {
         name: 'משולש שווה שוקיים',
         class: 'triangle-isosceles'
     },
-    RIGHT: {
+    3: {
         name: 'משולש ישר זווית',
         class: 'triangle-right'
     }
 };
 
-function getTheoremTriangleType(theoremText) {
-    theoremText = theoremText.toLowerCase();
+function updateTheoremsModal(theorems) {
+    console.log('Updating theorems modal with:', theorems);
+    const theoremList = document.querySelector('.theorem-list');
+    let highRelevanceTheorems = [];
 
-    if (theoremText.includes('ישר זווית') || theoremText.includes('פיתגורס')) {
-        return TRIANGLE_TYPES.RIGHT;
-    } else if (theoremText.includes('שווה צלעות')) {
-        return TRIANGLE_TYPES.EQUILATERAL;
-    } else if (theoremText.includes('שווה שוקיים')) {
-        return TRIANGLE_TYPES.ISOSCELES;
+    if (theoremList && theorems && theorems.length > 0) {
+        let theoremsHTML = '';
+        theorems.forEach(theorem => {
+            // Handle both array and object formats
+            const text = Array.isArray(theorem) ? theorem[1] : theorem.text;
+            const weight = Array.isArray(theorem) ? theorem[2] : theorem.weight;
+            const category = Array.isArray(theorem) ? theorem[3] : theorem.category;
+
+            // Get triangle type based on category
+            const triangleType = TRIANGLE_TYPES[category] || TRIANGLE_TYPES[0];
+
+            // Check for high relevance (90% or higher)
+            if (weight >= 0.9) {
+                const theoremKey = Array.isArray(theorem) ? theorem[0] : theorem.id;
+                if (!currentHighRelevanceTheorems.has(theoremKey)) {
+                    highRelevanceTheorems.push({
+                        id: theoremKey,
+                        text: text
+                    });
+                    currentHighRelevanceTheorems.add(theoremKey);
+                }
+            }
+
+            theoremsHTML += `
+                <div class="theorem-item">
+                    <div class="theorem-text">
+                        ${text}
+                        <span class="theorem-type ${triangleType.class}">
+                            (${triangleType.name})
+                        </span>
+                    </div>
+                    <div class="theorem-weight">רלוונטיות: ${(weight * 100).toFixed(1)}%</div>
+                </div>
+            `;
+        });
+        theoremList.innerHTML = theoremsHTML;
+
+        // Show high relevance modal if we have new highly relevant theorems
+        if (highRelevanceTheorems.length > 0) {
+            showHighRelevanceModal(highRelevanceTheorems);
+        }
+    } else {
+        theoremList.innerHTML = '<div class="theorem-item"><div class="theorem-text">אין משפטים רלוונטיים כרגע</div></div>';
     }
-    return TRIANGLE_TYPES.GENERAL;
 }
 
 function initializeHighRelevanceModal() {
@@ -78,58 +116,6 @@ function hideHighRelevanceModal() {
     modal.classList.remove('show');
 }
 
-// Modify your existing updateTheoremsModal function to check for high relevance theorems
-function updateTheoremsModal(theorems) {
-    console.log('Updating theorems modal with:', theorems);
-    const theoremList = document.querySelector('.theorem-list');
-
-    let highRelevanceTheorems = [];
-
-    if (theoremList && theorems && theorems.length > 0) {
-        let theoremsHTML = '';
-        theorems.forEach(theorem => {
-            // Handle both array and object formats
-            const text = Array.isArray(theorem) ? theorem[1] : theorem.text;
-            const weight = Array.isArray(theorem) ? theorem[2] : theorem.weight;
-
-            // Check for high relevance (90% or higher)
-            if (weight >= 0.9) {
-                const theoremKey = Array.isArray(theorem) ? theorem[0] : theorem.id;
-                if (!currentHighRelevanceTheorems.has(theoremKey)) {
-                    highRelevanceTheorems.push({
-                        id: theoremKey,
-                        text: text
-                    });
-                    currentHighRelevanceTheorems.add(theoremKey);
-                }
-            }
-
-            // Determine triangle type based on theorem text
-            const triangleType = getTheoremTriangleType(text);
-
-            theoremsHTML += `
-                <div class="theorem-item">
-                    <div class="theorem-text">
-                        ${text}
-                        <span class="theorem-type ${triangleType.class}">
-                            (${triangleType.name})
-                        </span>
-                    </div>
-                    <div class="theorem-weight">רלוונטיות: ${(weight * 100).toFixed(1)}%</div>
-                </div>
-            `;
-        });
-        theoremList.innerHTML = theoremsHTML;
-
-        // Show high relevance modal if we have new highly relevant theorems
-        if (highRelevanceTheorems.length > 0) {
-            showHighRelevanceModal(highRelevanceTheorems);
-        }
-    } else {
-        theoremList.innerHTML = '<div class="theorem-item"><div class="theorem-text">אין משפטים רלוונטיים כרגע</div></div>';
-    }
-}
-
 // Debounce function to avoid too frequent resets
 function debounce(func, wait) {
     let timeout;
@@ -157,11 +143,11 @@ function resetInactivityTimer() {
         clearTimeout(inactivityTimer);
     }
 
-    console.log('Setting new timer for 2 minutes');
+    console.log('Setting new timer for 15 minutes');
     inactivityTimer = setTimeout(() => {
         console.log('Timer triggered! Calling checkInactivity');
         checkInactivity();
-    }, 10000); // Testing with 10 seconds instead of 120000 for debugging
+    }, 900000); // 15 minutes
 }
 
 async function checkInactivity() {

@@ -70,7 +70,8 @@ def process_answer():
         formatted_theorems = [{
             'id': theorem[0],
             'text': theorem[1],
-            'weight': theorem[2]
+            'weight': theorem[2],
+            'category': theorem[0] if len(theorem) < 4 else theorem[3]
         } for theorem in theorems]
         # Get triangle weights from session for all users
         triangle_weights = session['geometry_state']['triangle_weights']
