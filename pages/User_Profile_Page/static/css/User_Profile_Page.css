@@ -228,7 +228,9 @@
 .no-activity {
     text-align: center;
     padding: 3rem;
-    color: #718096;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
 
 .no-activity i {
@@ -241,7 +243,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background: linear-gradient(135deg, #4169e1 0%, #3451b2 100%);
+    background: #4169e1;
     color: white;
     padding: 0.75rem 1.5rem;
     border-radius: 2rem;
@@ -251,9 +253,58 @@
 }
 
 .start-exercise-btn:hover {
+    background: #3451b2;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(65,105,225,0.2);
 }
+
+.stats-dashboard, .triangle-distribution, .recent-activity {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.triangle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.triangle-card {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.activity-timeline {
+    margin-top: 1rem;
+}
+
+.activity-item {
+    background: white;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease;
+}
+
+.activity-item:hover {
+    transform: translateX(-5px);
+}
+
 
 @media (max-width: 768px) {
     .profile-header {

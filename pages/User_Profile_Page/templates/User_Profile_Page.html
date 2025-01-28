@@ -5,13 +5,14 @@
 {% endblock %}
 {% block content %}
 <div class="profile-container">
+    <!-- Profile Header Section -->
     <div class="profile-header">
         <div class="profile-avatar">
             {% if user.role == 'admin' %}
-                 <img src="{{ url_for('static', filename='media/king.png') }}" alt="Admin Profile">
+                <img src="{{ url_for('static', filename='media/king.png') }}" alt="Admin Profile">
             {% else %}
                 <img src="{{ url_for('static', filename='media/profile sticker.png') }}" alt="User Profile">
-             {% endif %}
+            {% endif %}
         </div>
         <div class="profile-info">
             <h1>{{ user.first_name }} {{ user.last_name }}</h1>
@@ -25,100 +26,92 @@
             </span>
         </div>
     </div>
-<!--     {% if admin_stats %}-->
-<!--    <div class="admin-stats">-->
-<!--        <div class="section-header">-->
-<!--            <i class="fas fa-chart-bar"></i>-->
-<!--            <h2>סטטיסטיקות מערכת</h2>-->
-<!--        </div>-->
-<!--        <div class="stats-grid">-->
-<!--            <div class="stat-card">-->
-<!--                <div class="stat-icon">-->
-<!--                    <i class="fas fa-users"></i>-->
-<!--                </div>-->
-<!--                <div class="stat-info">-->
-<!--                    <span class="stat-value">{{ admin_stats.total_users }}</span>-->
-<!--                    <span class="stat-label">משתמשים רשומים</span>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="stat-card">-->
-<!--                <div class="stat-icon">-->
-<!--                    <i class="fas fa-comments"></i>-->
-<!--                </div>-->
-<!--                <div class="stat-info">-->
-<!--                    <span class="stat-value">{{ admin_stats.total_sessions }}</span>-->
-<!--                    <span class="stat-label">סך הכל שיחות</span>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="stat-card">-->
-<!--                <div class="stat-icon">-->
-<!--                    <i class="fas fa-chart-line"></i>-->
-<!--                </div>-->
-<!--                <div class="stat-info">-->
-<!--                    <span class="stat-value">{{ admin_stats.avg_sessions }}</span>-->
-<!--                    <span class="stat-label">ממוצע שיחות למשתמש</span>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    {% endif %}-->
 
-<!--    <div class="activity-section">-->
-<!--        <div class="section-header">-->
-<!--            <i class="fas fa-history"></i>-->
-<!--            <h2>היסטוריית פעילות</h2>-->
-<!--        </div>-->
-<!--        <div class="activity-list">-->
-<!--            {% if activity_logs %}-->
-<!--                {% for log in activity_logs %}-->
-<!--                <div class="activity-item">-->
-<!--                    <div class="activity-icon">-->
-<!--                        {% if log.action_type == 'NEW_SESSION' %}-->
-<!--                            <i class="fas fa-shapes"></i>-->
-<!--                        {% elif log.action_type == 'SESSION_END' %}-->
-<!--                            <i class="fas fa-check-circle"></i>-->
-<!--                        {% elif log.action_type == 'LOGIN' %}-->
-<!--                            <i class="fas fa-sign-in-alt"></i>-->
-<!--                        {% elif log.action_type == 'LOGOUT' %}-->
-<!--                            <i class="fas fa-sign-out-alt"></i>-->
-<!--                        {% else %}-->
-<!--                            <i class="fas fa-circle"></i>-->
-<!--                        {% endif %}-->
-<!--                    </div>-->
-<!--                    <div class="activity-content">-->
-<!--                        <div class="activity-details">-->
-<!--                            <span class="activity-type">-->
-<!--                                {% if log.action_type == 'NEW_SESSION' %}-->
-<!--                                    התחלת תרגיל גאומטריה-->
-<!--                                {% elif log.action_type == 'SESSION_END' %}-->
-<!--                                    סיום תרגיל בהצלחה-->
-<!--                                {% elif log.action_type == 'LOGIN' %}-->
-<!--                                    התחברות למערכת-->
-<!--                                {% elif log.action_type == 'LOGOUT' %}-->
-<!--                                    התנתקות מהמערכת-->
-<!--                                {% else %}-->
-<!--                                    {{ log.action_type }}-->
-<!--                                {% endif %}-->
-<!--                            </span>-->
-<!--                            <span class="activity-time">-->
-<!--                                <i class="far fa-clock"></i>-->
-<!--                                {{ log.timestamp.strftime('%d/%m/%Y %H:%M') }}-->
-<!--                            </span>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                {% endfor %}-->
-<!--            {% else %}-->
-<!--                <div class="no-activity">-->
-<!--                    <i class="fas fa-book-open"></i>-->
-<!--                    <p>טרם בוצעו תרגילים במערכת</p>-->
-<!--                    <a href="#" class="start-exercise-btn">-->
-<!--                        <i class="fas fa-play"></i>-->
-<!--                        התחל תרגיל חדש-->
-<!--                    </a>-->
-<!--                </div>-->
-<!--            {% endif %}-->
-<!--        </div>-->
-<!--    </div>-->
+    <!-- Statistics Dashboard -->
+    <div class="stats-dashboard">
+        <div class="section-header">
+            <i class="fas fa-chart-pie"></i>
+            <h2>סטטיסטיקות משתמש</h2>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ user_stats[0] if user_stats[0] else 0 }}</span>
+                    <span class="stat-label">תרגילים שהתחלת</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ user_stats[1] if user_stats[1] else 0 }}</span>
+                    <span class="stat-label">תרגילים שסיימת</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-sign-in-alt"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ user_stats[2] if user_stats[2] else 0 }}</span>
+                    <span class="stat-label">התחברויות למערכת</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="activity-section">
+        <div class="section-header">
+            <i class="fas fa-history"></i>
+            <h2>היסטוריית פעילות</h2>
+        </div>
+        {% if recent_activity %}
+            <div class="activity-list">
+                {% for activity in recent_activity %}
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        {% if activity[1] == 'LOGIN_ATTEMPT' %}
+                            <i class="fas fa-sign-in-alt"></i>
+                        {% elif activity[1] == 'SESSION_START' %}
+                            <i class="fas fa-play-circle"></i>
+                        {% elif activity[1] == 'SESSION_END' %}
+                            <i class="fas fa-check-circle"></i>
+                        {% else %}
+                            <i class="fas fa-circle"></i>
+                        {% endif %}
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-time">{{ activity[0].strftime('%d/%m/%Y %H:%M') }}</div>
+                        <div class="activity-description">
+                            {% if activity[1] == 'LOGIN_ATTEMPT' %}
+                                התחברות למערכת
+                            {% elif activity[1] == 'SESSION_START' %}
+                                התחלת תרגיל חדש
+                            {% elif activity[1] == 'SESSION_END' %}
+                                סיימת תרגיל בהצלחה
+                            {% else %}
+                                {{ activity[1] }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-activity">
+                <i class="fas fa-book-open"></i>
+                <p>אין פעילות אחרונה</p>
+                <a href="{{ url_for('question_page.start_question') }}" class="start-exercise-btn">
+                    <i class="fas fa-play"></i>
+                    התחל תרגיל חדש
+                </a>
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
