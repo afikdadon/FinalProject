@@ -32,7 +32,6 @@
     transition: transform 0.3s ease;
 }
 
-
 .profile-info h1 {
     margin: 0;
     font-size: 2rem;
@@ -56,6 +55,7 @@
     margin: 0;
     font-size: 1rem;
 }
+
 .role-badge {
     display: inline-flex;
     align-items: center;
@@ -94,7 +94,8 @@
     font-size: 1.5rem;
 }
 
-.admin-stats {
+/* Statistics Dashboard */
+.stats-dashboard {
     background: white;
     border-radius: 1rem;
     padding: 2rem;
@@ -131,6 +132,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    color: white;
 }
 
 .stat-icon i {
@@ -155,6 +157,169 @@
     font-size: 0.9rem;
 }
 
+/* Question Statistics */
+.question-stats {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-top: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.question-list {
+    margin-top: 1rem;
+}
+
+.question-list .question-item {
+    padding: 1.5rem 0;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.question-list .question-item:last-child {
+    border-bottom: none;
+}
+
+.question-list .question-id {
+    color: black;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.question-list .question-text {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+}
+
+.question-list .question-difficulty {
+    color: #666;
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.question-list .metrics-summary {
+    color: #4169e1;
+    font-weight: 500;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    font-family: 'Heebo', sans-serif;
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-height: 80vh;
+    overflow-y: auto;
+    border-radius: 8px;
+    direction: rtl;
+}
+
+.modal-content h2 {
+    margin-bottom: 20px;
+    color: #2d3748;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 15px;
+}
+
+.close:hover {
+    color: #666;
+}
+
+/* Theorems and Questions Modal Content */
+.theorems-list .theorem-item,
+.questions-list .question-item {
+    border-bottom: 1px solid #e2e8f0;
+    padding: 1.5rem 0;
+    margin-bottom: 1rem;
+}
+
+.theorems-list .theorem-item:last-child,
+.questions-list .question-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.theorems-list .theorem-id,
+.questions-list .question-id {
+    color: #4169e1;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.theorems-list .theorem-text,
+.questions-list .question-text {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+}
+
+.theorems-list .theorem-category,
+.questions-list .question-difficulty {
+    color: #666;
+    font-size: 0.9rem;
+    display: block;
+}
+
+/* Buttons */
+.show-theorems-btn,
+.show-questions-btn {
+    background: #4169e1;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px 0;
+    font-family: 'Heebo', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.show-theorems-btn:hover,
+.show-questions-btn:hover {
+    background: #3451b2;
+    transform: translateY(-2px);
+}
+
+.theorems-section,
+.questions-section {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-top: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+/* Recent Activity Section */
 .activity-section {
     background: white;
     border-radius: 1rem;
@@ -205,18 +370,6 @@
     flex: 1;
 }
 
-.activity-details {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.activity-type {
-    font-weight: 500;
-    color: #2d3748;
-    font-size: 1rem;
-}
-
 .activity-time {
     color: #718096;
     font-size: 0.9rem;
@@ -257,55 +410,7 @@
     transform: translateY(-2px);
 }
 
-.stats-dashboard, .triangle-distribution, .recent-activity {
-    background: white;
-    border-radius: 1rem;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1rem;
-}
-
-.triangle-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.triangle-card {
-    background: #f8f9fa;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.activity-timeline {
-    margin-top: 1rem;
-}
-
-.activity-item {
-    background: white;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    margin-bottom: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: transform 0.2s ease;
-}
-
-.activity-item:hover {
-    transform: translateX(-5px);
-}
-
-
+/* Responsive styles */
 @media (max-width: 768px) {
     .profile-header {
         flex-direction: column;
@@ -321,5 +426,10 @@
 
     .stat-card {
         padding: 1.25rem;
+    }
+
+    .modal-content {
+        width: 95%;
+        margin: 2% auto;
     }
 }

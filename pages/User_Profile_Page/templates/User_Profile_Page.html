@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="{{ url_for('user_profile_page.static', filename='css/User_Profile_Page.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 {% endblock %}
+
 {% block content %}
 <div class="profile-container">
     <!-- Profile Header Section -->
@@ -64,7 +65,148 @@
         </div>
     </div>
 
+    {% if user.role == 'admin' %}
+    <!-- Admin Dashboard Section -->
+    <div class="admin-dashboard">
+        <div class="section-header">
+            <i class="fas fa-chart-line"></i>
+            <h2>נתוני מערכת</h2>
+        </div>
+
+        <!-- System Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ admin_stats.system_stats.total_users }}</span>
+                    <span class="stat-label">משתמשים רשומים</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-user-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ admin_stats.system_stats.active_users_day }}</span>
+                    <span class="stat-label">משתמשים פעילים היום</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ (admin_stats.system_stats.completed_sessions / admin_stats.system_stats.total_sessions * 100) | round(1) }}%</span>
+                    <span class="stat-label">אחוז השלמת תרגילים</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question Statistics -->
+        <div class="question-stats">
+            <div class="section-header">
+                <i class="fas fa-question-circle"></i>
+                <h2>סטטיסטיקת שאלות</h2>
+            </div>
+            <div class="question-list">
+                {% for question in admin_stats.question_stats %}
+                <div class="question-item">
+                    <span class="question-id">שאלה מספר {{ question.question_id }}</span>
+                    <div class="question-text">{{ question.question_text }}</div>
+                    <span class="question-difficulty">
+                        רמת קושי:
+                        {% if question.difficulty_level == 1 %}
+                            קלה
+                        {% elif question.difficulty_level == 2 %}
+                            בינונית
+                        {% else %}
+                            קשה
+                        {% endif %}
+                    </span>
+                    <div class="metrics-summary">סה"כ נשאל: {{ question.times_asked }} פעמים</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Theorems Section -->
+        <div class="theorems-section">
+            <div class="section-header">
+                <i class="fas fa-book"></i>
+                <h2>משפטים במערכת</h2>
+            </div>
+            <button class="show-theorems-btn" onclick="showTheorems()">הצג את כל המשפטים</button>
+        </div>
+
+        <!-- Modal for theorems -->
+        <div id="theoremsModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeTheoremsModal()">&times;</span>
+                <h2>כל המשפטים במערכת</h2>
+                <div class="theorems-list">
+                    {% for theorem in admin_stats.theorems %}
+                    <div class="theorem-item">
+                        <span class="theorem-id">משפט מספר {{ theorem[0] }}</span>
+                        <div class="theorem-text">{{ theorem[1] }}</div>
+                        <span class="theorem-category">
+                            {% if theorem[2] == 0 %}
+                                משולש כללי
+                            {% elif theorem[2] == 1 %}
+                                משולש שווה צלעות
+                            {% elif theorem[2] == 2 %}
+                                משולש שווה שוקיים
+                            {% else %}
+                                משולש ישר זווית
+                            {% endif %}
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions Section -->
+        <div class="questions-section">
+            <div class="section-header">
+                <i class="fas fa-question-circle"></i>
+                <h2>שאלות במערכת</h2>
+            </div>
+            <button class="show-questions-btn" onclick="showQuestions()">הצג את כל השאלות</button>
+        </div>
+
+        <!-- Modal for questions -->
+        <div id="questionsModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeQuestionsModal()">&times;</span>
+                <h2>כל השאלות במערכת</h2>
+                <div class="questions-list">
+                    {% for question in admin_stats.questions %}
+                    <div class="question-item">
+                        <span class="question-id">שאלה מספר {{ question[0] }}</span>
+                        <div class="question-text">{{ question[1] }}</div>
+                        <span class="question-difficulty">
+                            {% if question[2] == 1 %}
+                                קלה
+                            {% elif question[2] == 2 %}
+                                בינונית
+                            {% else %}
+                                קשה
+                            {% endif %}
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Recent Activity Section -->
+    {% if user.role != 'admin' %}
     <div class="activity-section">
         <div class="section-header">
             <i class="fas fa-history"></i>
@@ -113,5 +255,10 @@
             </div>
         {% endif %}
     </div>
+    {% endif %}
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('user_profile_page.static', filename='js/User_Profile_Page.js') }}"></script>
 {% endblock %}
