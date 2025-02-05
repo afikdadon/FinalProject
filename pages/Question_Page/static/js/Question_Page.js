@@ -7,6 +7,8 @@ let questionAnswerCount = 0;
 let tooltipTimer = null;
 let highRelevanceModal = null;
 let currentHighRelevanceTheorems = new Set();
+let isDeliberateExit = false;
+
 
 
 console.log('Script starting...');
@@ -421,49 +423,9 @@ function initializeDebugInfo() {
     updateDebugInfo(defaultWeights);
 }
 
-function toggleTheorems() {
-    const modal = document.getElementById('theoremsModal');
-    modal.style.display = modal.style.display === 'none' ? 'block' : 'none';
-}
-
-function toggleDebug() {
-    const modal = document.getElementById('debugModal');
-    modal.style.display = modal.style.display === 'none' ? 'block' : 'none';
-}
-
 function confirmFinish() {
     const modal = document.getElementById('finishModal');
     modal.style.display = 'block';
-}
-
-async function finishSession() {
-    try {
-        // Hide the modal first
-        const modal = document.getElementById('finishModal');
-        if (modal) {
-            modal.style.display = 'none';
-        }
-
-        const response = await fetch('/question/finish', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include'
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            // Redirect to the feedback page
-            window.location.href = data.redirect;
-        } else {
-            throw new Error(data.error || 'Failed to finish session');
-        }
-    } catch (error) {
-        console.error('Error during session finish:', error);
-        alert('אירעה שגיאה בסיום המפגש. אנא נסה שוב.');
-    }
 }
 
 // Close modal when clicking outside of it
@@ -472,10 +434,6 @@ window.onclick = function(event) {
         event.target.style.display = 'none';
     }
 }
-
-window.addEventListener('beforeunload', function(e) {
-    navigator.sendBeacon('/question/cleanup');
-});
 
 function logout() {
     fetch('/question/cleanup', {
@@ -619,4 +577,68 @@ function toggleTheorems() {
     const modal = document.getElementById('theoremsModal');
     modal.style.display = modal.style.display === 'none' ? 'block' : 'none';
     hideTheoremsTooltip(); // Hide tooltip when theorems are viewed
+}
+
+function hideFinishModal() {
+    const modal = document.getElementById('finishModal');
+    modal.style.display = 'none';
+}
+
+window.onbeforeunload = function(e) {
+    // If it's a deliberate exit (user clicked סיום and chose an option), don't show popup
+    if (isDeliberateExit) {
+        return undefined; // This prevents the popup
+    }
+
+    // Otherwise, for unintentional exits (like closing tab), send data and show popup
+    const data = {
+        session_type: 'interrupted',
+        timestamp: new Date().toISOString(),
+        last_question_id: currentQuestionId,
+        question_count: questionAnswerCount
+    };
+
+    navigator.sendBeacon('/api/end-session', JSON.stringify(data));
+
+    e.preventDefault();
+    e.returnValue = 'האם אתה בטוח שברצונך לעזוב את הדף?';
+    return e.returnValue;
+};
+
+// Modify your finishSession function
+async function finishSession(status) {
+    try {
+        const modal = document.getElementById('finishModal');
+        modal.style.display = 'none';
+
+        // Set flag for deliberate exit
+        isDeliberateExit = true;
+
+        const response = await fetch('/question/finish', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                status: status
+            }),
+            credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // If the user wants to try a new exercise
+            if (status === 'partial') {
+                window.location.href = '/question/';
+            } else {
+                window.location.href = data.redirect;
+            }
+        } else {
+            throw new Error(data.error || 'Failed to finish session');
+        }
+    } catch (error) {
+        console.error('Error during session finish:', error);
+        alert('אירעה שגיאה בסיום המפגש. אנא נסה שוב.');
+    }
 }

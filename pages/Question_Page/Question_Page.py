@@ -102,25 +102,29 @@ def process_answer():
 @question_page.route('/finish', methods=['POST'])
 def finish_session():
     try:
+        data = request.get_json()
+        status = data.get('status', 'unknown')
+
         # Get current user session
         user = session.get('user')
-        print("User session before redirect to feedback:", user)  # Debug log
-
         if not user:
-            print("No user found in session at finish")  # Debug log
             return jsonify({'success': False, 'error': 'Not authenticated'}), 401
 
-        # Clear geometry-specific session data while preserving user authentication
-        geometry_state = session.pop('geometry_state', None)
-        print("Session after geometry cleanup:", dict(session))  # Debug log
+        # Log the session end with status
+        UserLogger.log_session_end(status, None)
 
-        # Log the session end
-        UserLogger.log_session_end("FINISH", None)
+        # Clear geometry-specific session data
+        session.pop('geometry_state', None)
 
-        # Return success with redirect URL
+        # Determine redirect URL based on status
+        if status == 'partial':
+            redirect_url = url_for('question_page.question')
+        else:
+            redirect_url = url_for('home_page.home')
+
         return jsonify({
             'success': True,
-            'redirect': url_for('home_page.home')
+            'redirect': redirect_url
         })
     except Exception as e:
         print(f"Error in finish_session: {str(e)}")

@@ -159,14 +159,27 @@
         </div>
     </div>
 
-    <!-- Add this to your Question_Page.html -->
     <div id="finishModal" class="modal">
         <div class="modal-content">
-            <h2>סיים מפגש</h2>
-            <p>האם אתה בטוח שברצונך לסיים את המפגש?</p>
-            <div class="modal-buttons">
-                <button onclick="finishSession()">כן</button>
-                <button onclick="document.getElementById('finishModal').style.display='none'">לא</button>
+            <h2>סיום תרגיל</h2>
+            <p>איך היית מתאר את התקדמותך בתרגיל?</p>
+            <div class="feedback-buttons">
+                <button class="feedback-btn success" onclick="finishSession('solved')">
+                    <i class="fas fa-check-circle"></i>
+                    הצלחתי, תודה!
+                </button>
+                <button class="feedback-btn partial" onclick="finishSession('partial')">
+                    <i class="fas fa-lightbulb"></i>
+                    התקדמתי אבל אנסה תרגיל חדש
+                </button>
+                <button class="feedback-btn give-up" onclick="finishSession('gave_up')">
+                    <i class="fas fa-times-circle"></i>
+                    לא הצלחתי הפעם
+                </button>
+                <button class="feedback-btn cancel" onclick="hideFinishModal()">
+                    <i class="fas fa-arrow-left"></i>
+                    חזרה לתרגיל
+                </button>
             </div>
         </div>
     </div>

@@ -29,12 +29,16 @@
         <form action="{{ url_for('contact_page.submit') }}" method="POST" id="contactForm">
             <div class="form-group">
                 <label for="name"><i class="fas fa-user"></i> שם מלא</label>
-                <input type="text" id="name" name="name" value="{{ user.first_name }} {{ user.last_name }}" required>
+                <input type="text" id="name" name="name"
+                       value="{{ user.first_name + ' ' + user.last_name if user else '' }}"
+                       required>
             </div>
 
             <div class="form-group">
                 <label for="email"><i class="fas fa-envelope"></i> אימייל</label>
-                <input type="email" id="email" name="email" value="{{ user.email }}" required>
+                <input type="email" id="email" name="email"
+                       value="{{ user.email if user else '' }}"
+                       required>
             </div>
 
             <div class="form-group">
