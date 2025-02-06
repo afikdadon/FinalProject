@@ -642,3 +642,10 @@ async function finishSession(status) {
         alert('אירעה שגיאה בסיום המפגש. אנא נסה שוב.');
     }
 }
+
+function toggleDebug() {
+    const modal = document.getElementById('debugModal');
+    if (modal) {
+        modal.style.display = modal.style.display === 'none' ? 'block' : 'none';
+    }
+}
