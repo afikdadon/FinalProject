@@ -101,3 +101,16 @@ def verify_email_exists(email: str) -> bool:
     except Exception as e:
         print(f"Database error in verify_email_exists: {str(e)}")
         return False
+
+def update_last_login(user_id: int) -> None:
+    """Update the last login timestamp for a user in the database."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE Users 
+                SET last_login = CURRENT_TIMESTAMP
+                WHERE user_id = ?""", (user_id,))
+            conn.commit()
+    except Exception as e:
+        print(f"Error updating last login: {str(e)}")

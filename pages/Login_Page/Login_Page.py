@@ -17,7 +17,7 @@ Date: February 2024
 """
 
 from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify
-from db_utils import verify_user, get_db_connection, hash_password
+from db_utils import verify_user, get_db_connection, hash_password, update_last_login
 from UserLogger import UserLogger
 from email_utils import EmailUtils
 from datetime import datetime
@@ -50,6 +50,7 @@ def login():
             user = verify_user(email, password)
             if user:
                 session['user'] = user
+                update_last_login(user['user_id'])
                 UserLogger.log_login(True, email)
                 return jsonify({'success': True})
 
