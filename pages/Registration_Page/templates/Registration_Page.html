@@ -1,3 +1,14 @@
+
+<!--   Registration_Page.html-->
+
+<!--   Description:-->
+<!--       Template for user registration page. Provides a clean, responsive interface-->
+<!--       for new user registration with real-time validation feedback.-->
+
+<!--   Author: Karin Hershko and Afik Dadon-->
+<!--   Date: February 2024-->
+
+
 {% extends "base.html" %}
 
 {% block css %}
@@ -60,11 +71,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-console.log('Template loaded'); // Debug line
-</script>
 <script src="{{ url_for('registration_page.static', filename='js/Registration_Page.js') }}"></script>
-<script>
-console.log('After loading Registration_Page.js'); // Debug line
-</script>
 {% endblock %}

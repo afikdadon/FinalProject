@@ -1,3 +1,16 @@
+/**
+ * Home_Page.css
+ * ------------
+ * Description:
+ *     Core styles for the Geometric Learning System's home page.
+ *     Implements a responsive, modern design system with consistent
+ *     spacing, typography, and color schemes.
+ *
+ * Author: Karin Hershko and Afik Dadon
+ * Date: February 2024
+ */
+
+/* === Base Container === */
 .home-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -5,7 +18,7 @@
     font-family: 'Heebo', sans-serif;
 }
 
-/* Welcome Section */
+/* === Welcome Section === */
 .welcome-section {
     text-align: center;
     padding: 4rem 2rem;
@@ -40,6 +53,7 @@
     border-radius: 1rem;
 }
 
+/* Welcome Typography */
 .welcome-text {
     font-size: 3rem;
     color: #3F4D57;
@@ -52,6 +66,7 @@
     margin-bottom: 2rem;
 }
 
+/* Welcome Button */
 .start-btn {
     display: inline-flex;
     align-items: center;
@@ -73,7 +88,7 @@
     box-shadow: 0 4px 12px rgba(65, 105, 225, 0.2);
 }
 
-/* About Section */
+/* === About Section === */
 .about-section {
     margin-bottom: 4rem;
 }
@@ -117,14 +132,14 @@
     font-size: 1.2em;
 }
 
-/* Features Section */
+/* === Features Section === */
 .features-section {
     margin-bottom: 4rem;
 }
 
 .features-section h2 {
     text-align: center;
-   font-size: 2.2rem;
+    font-size: 2.2rem;
     color: #3F4D57;
     margin-bottom: 2rem;
 }
@@ -161,7 +176,7 @@
     font-size: 1.2em;
 }
 
-/* Feedback Section */
+/* === Feedback Section === */
 .feedback-section {
     margin: 4rem 0;
     padding: 2rem;
@@ -219,28 +234,7 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Media Queries */
-@media (max-width: 768px) {
-    .feedback-section {
-        margin: 3rem 0;
-        padding: 1rem;
-    }
-
-    .feedback-container {
-        padding: 2rem 1rem;
-    }
-
-    .feedback-content h2 {
-        font-size: 1.8rem;
-    }
-
-    .feedback-content p {
-        font-size: 1.1rem;
-    }
-}
-
-
-/* Call to Action Section */
+/* === Call to Action Section === */
 .cta-section {
     text-align: center;
     padding: 4rem 0;
@@ -258,7 +252,6 @@
     color: #666;
     margin-bottom: 2rem;
     font-size: 1.7rem;
-
 }
 
 .cta-btn {
@@ -282,7 +275,7 @@
     box-shadow: 0 4px 12px rgba(65, 105, 225, 0.2);
 }
 
-/* Responsive Design */
+/* === Responsive Design === */
 @media (max-width: 1024px) {
     .about-content {
         grid-template-columns: repeat(2, 1fr);
@@ -320,5 +313,22 @@
 
     .features-grid {
         grid-template-columns: 1fr;
+    }
+
+    .feedback-section {
+        margin: 3rem 0;
+        padding: 1rem;
+    }
+
+    .feedback-container {
+        padding: 2rem 1rem;
+    }
+
+    .feedback-content h2 {
+        font-size: 1.8rem;
+    }
+
+    .feedback-content p {
+        font-size: 1.1rem;
     }
 }

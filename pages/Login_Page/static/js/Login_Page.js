@@ -1,11 +1,24 @@
-// Login_Page.js
+/**
+ * Login_Page.js
+ * ------------
+ * Description:
+ *     Client-side functionality for the login page of the Geometric Learning System.
+ *     Handles form submission, validation, error display, and password visibility.
+ *
+ * Author: Karin Hershko and Afik Dadon
+ * Date: February 2024
+ */
+
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Login JavaScript loaded');
+    // Initialize form elements
     const form = document.getElementById('loginForm');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
 
-    // Toggle password visibility
+    /**
+     * Initialize password visibility toggles
+     * Allows users to show/hide password input
+     */
     document.querySelectorAll('.toggle-password').forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
@@ -17,7 +30,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Show error message
+    /**
+     * Display error message below input field
+     * @param {HTMLElement} input - The input element with error
+     * @param {string} message - Error message to display
+     */
     function showError(input, message) {
         const formGroup = input.closest('.form-group');
         let errorDiv = formGroup.querySelector('.error-message');
@@ -32,7 +49,10 @@ document.addEventListener('DOMContentLoaded', function() {
         input.classList.add('error');
     }
 
-    // Clear error message
+    /**
+     * Remove error message and styling from input
+     * @param {HTMLElement} input - The input element to clear
+     */
     function clearError(input) {
         const formGroup = input.closest('.form-group');
         const errorDiv = formGroup.querySelector('.error-message');
@@ -42,37 +62,39 @@ document.addEventListener('DOMContentLoaded', function() {
         input.classList.remove('error');
     }
 
-    // Clear all errors
+    /**
+     * Remove all error messages and styling from form
+     */
     function clearAllErrors() {
         document.querySelectorAll('.error-message').forEach(err => err.remove());
         document.querySelectorAll('.error').forEach(input => input.classList.remove('error'));
     }
 
-    // Form submission
+    /**
+     * Handle form submission
+     * Validates inputs and submits form via AJAX
+     */
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
-
         clearAllErrors();
-        const formData = new FormData(form);
 
         try {
             const response = await fetch(form.action, {
                 method: 'POST',
-                body: formData
+                body: new FormData(form)
             });
 
             const result = await response.json();
 
             if (result.success) {
-                window.location.href = '/';  // Redirect to home page after successful login
+                window.location.href = '/';
             } else {
-                // Show error message under the relevant field
+                // Display specific error messages
                 if (result.error.includes('אימייל')) {
                     showError(emailInput, result.error);
                 } else if (result.error.includes('סיסמה')) {
                     showError(passwordInput, result.error);
                 } else {
-                    // Show general error under email input
                     showError(emailInput, result.error);
                 }
             }
@@ -83,11 +105,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Real-time validation
-    emailInput.addEventListener('input', () => {
-        clearError(emailInput);
-    });
-
-    passwordInput.addEventListener('input', () => {
-        clearError(passwordInput);
-    });
+    emailInput.addEventListener('input', () => clearError(emailInput));
+    passwordInput.addEventListener('input', () => clearError(passwordInput));
 });

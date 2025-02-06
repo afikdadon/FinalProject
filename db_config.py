@@ -1,4 +1,14 @@
-# db_config.py
+"""
+db_config.py
+-----------
+Description:
+   Database configuration settings for the Geometric Learning System.
+   Contains connection parameters for SQL Server instances.
+   Configured for local development with multiple developer setups.
+
+Author: Karin Hershko and Afik Dadon
+Date: February 2024
+"""
 
 # Afik
 DB_CONFIG = {

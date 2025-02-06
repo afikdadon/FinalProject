@@ -1,5 +1,18 @@
+<!--
+Home_Page.html-->
+<!-- -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+<!--Description:-->
+<!--    Main template for the Geometric Learning System's home page.-->
+<!--    Implements a responsive, modern landing page with sections for-->
+<!--    welcome message, about information, features, and call-to-action.-->
+
+<!--Author: Karin Hershko and Afik Dadon-->
+<!--Date: February 2024
+-->
+
 {% extends "base.html" %}
 
+{# Stylesheet imports #}
 {% block css %}
 <link rel="stylesheet" href="{{ url_for('home_page.static', filename='css/Home_Page.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -7,7 +20,7 @@
 
 {% block content %}
 <div class="home-container">
-    <!-- Welcome Section -->
+    {# Welcome Section #}
     <section class="welcome-section">
         <div class="welcome-content">
             <div class="welcome-text-content">
@@ -34,7 +47,7 @@
         </div>
     </section>
 
-    <!-- About Section -->
+    {# About Section #}
     <section class="about-section">
         <h2>אודות המערכת</h2>
         <div class="about-content">
@@ -58,7 +71,7 @@
         </div>
     </section>
 
-    <!-- Features Section -->
+    {# Features Section #}
     <section class="features-section">
         <h2>תכונות מרכזיות</h2>
         <div class="features-grid">
@@ -88,7 +101,7 @@
         </div>
     </section>
 
-    <!-- Feedback Section -->
+    {# Feedback Section #}
     <section class="feedback-section">
         <div class="feedback-container">
             <div class="feedback-content">
@@ -103,7 +116,7 @@
         </div>
     </section>
 
-    <!-- Call to Action -->
+    {# Call to Action Section #}
     <section class="cta-section">
         <h2>מוכנים להתחיל?</h2>
         <p>התחילו לפתור תרגילים בדרך חדשה ומעניינת</p>

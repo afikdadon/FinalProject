@@ -1,6 +1,23 @@
+"""
+Feedback_Page.py
+--------------
+Description:
+    Handles user feedback collection for the Geometric Learning System.
+    Manages feedback form display and submission processing.
+
+Author: Karin Hershko and Afik Dadon
+Date: February 2024
+"""
+
 from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify
 from db_utils import get_db_connection
 from UserLogger import UserLogger
+from typing import Dict, Union
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 feedback_page = Blueprint('feedback_page', __name__,
                           template_folder='templates',
@@ -8,7 +25,9 @@ feedback_page = Blueprint('feedback_page', __name__,
 
 
 @feedback_page.route('/')
-def feedback():
+def feedback() -> Union[str, redirect]:
+    """Display the feedback form page.
+    Requires user authentication."""
     user = session.get('user', None)
     if not user:
         return redirect(url_for('login_page.login'))
@@ -16,37 +35,66 @@ def feedback():
 
 
 @feedback_page.route('/submit', methods=['POST'])
-def submit_feedback():
+def submit_feedback() -> jsonify:
+    """Process feedback form submission.
+    Validates input and stores in database."""
     try:
-        print("Full session contents:", dict(session))
+        # Validate user session
+        if not _validate_user_session():
+            return jsonify({
+                'success': False,
+                'error': 'User is not logged in'
+            }), 401
 
-        if 'user' not in session:
-            print("No user in session during feedback submission")
-            return jsonify({'success': False, 'error': 'User is not logged in'}), 401
-
-        user = session.get('user')
-        print("User data during feedback submission:", user)
-
-        user_id = user.get('user_id')
-        print(f"User ID for feedback: {user_id}")
-
-        if not user_id:
-            print("No user ID in session")
-            return jsonify({'success': False, 'error': 'No user ID found'}), 401
-
-        # Get the form data
+        # Get and validate form data
         data = request.get_json()
         if not data:
-            print("No feedback data received")
-            return jsonify({'success': False, 'error': 'No feedback data received'}), 400
+            logger.error("No feedback data received")
+            return jsonify({
+                'success': False,
+                'error': 'No feedback data received'
+            }), 400
 
-        print(f"Processing feedback for user ID: {user_id}")
-        print("Form data received:", data)
+        # Save feedback to database
+        _save_feedback_to_db(data)
 
-        conn = get_db_connection()
+        # Log successful submission
+        UserLogger.log_feedback_submission()
+
+        return jsonify({'success': True})
+
+    except Exception as e:
+        logger.error(f"Error in submit_feedback: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': 'אירעה שגיאה בשמירת המשוב. אנא נסה שוב או צור קשר עם התמיכה.'
+        }), 500
+
+
+# === Helper Functions ===
+
+def _validate_user_session() -> bool:
+    """Validate user session and extract user ID."""
+    user = session.get('user')
+    if not user:
+        logger.warning("No user in session during feedback submission")
+        return False
+
+    user_id = user.get('user_id')
+    if not user_id:
+        logger.warning("No user ID in session")
+        return False
+
+    return True
+
+
+def _save_feedback_to_db(data: Dict) -> None:
+    """Save feedback data to database."""
+    user_id = session['user']['user_id']
+
+    with get_db_connection() as conn:
         cursor = conn.cursor()
 
-        # Insert feedback into database
         query = """
             INSERT INTO UserFeedback (
                 user_id, 
@@ -84,17 +132,3 @@ def submit_feedback():
         )
 
         cursor.execute(query, values)
-        conn.commit()
-        conn.close()
-
-        # Log the feedback submission
-        UserLogger.log_feedback_submission()
-
-        return jsonify({'success': True})
-
-    except Exception as e:
-        print(f"Error in submit_feedback: {str(e)}")
-        return jsonify({
-            'success': False,
-            'error': 'אירעה שגיאה בשמירת המשוב. אנא נסה שוב או צור קשר עם התמיכה.'
-        }), 500

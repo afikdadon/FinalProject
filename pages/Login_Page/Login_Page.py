@@ -1,45 +1,67 @@
-# Login_Page.py
+"""
+Login_Page.py
+------------
+Description:
+    Authentication module for the Geometric Learning System that handles user login,
+    logout, and password management functionalities. This module provides secure user
+    authentication, password reset capabilities, and session management.
+
+Routes:
+    - /: Main login page and authentication
+    - /logout: User logout and session cleanup
+    - /forgot-password: Password recovery initiation
+    - /reset-password/<token>: Password reset with token verification
+
+Author: Karin Hershko and Afik Dadon
+Date: February 2024
+"""
+
 from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify
-from flask_bcrypt import generate_password_hash
-from db_utils import verify_user, get_db_connection
+from db_utils import verify_user, get_db_connection, hash_password
 from UserLogger import UserLogger
 from email_utils import EmailUtils
 from datetime import datetime
 
-
-login_page = Blueprint('login_page', __name__,
-                       template_folder='templates',
-                       static_folder='static')
+# Blueprint Configuration
+login_page = Blueprint(
+    'login_page',
+    __name__,
+    template_folder='templates',
+    static_folder='static'
+)
 
 
 @login_page.route('/', methods=['GET', 'POST'])
 def login():
+    """Handle user login requests and authentication."""
     if request.method == 'POST':
         try:
             email = request.form.get('email')
             password = request.form.get('password')
 
-            # Check if all fields are filled
+            # Validate required fields
             if not all([email, password]):
                 return jsonify({
                     'success': False,
                     'error': 'נא למלא את כל השדות'
                 })
 
-            # Verify user credentials
+            # Authenticate user
             user = verify_user(email, password)
             if user:
                 session['user'] = user
                 UserLogger.log_login(True, email)
                 return jsonify({'success': True})
-            else:
-                UserLogger.log_login(False, email, 'Invalid credentials')
-                return jsonify({
-                    'success': False,
-                    'error': 'אימייל או סיסמה שגויים'
-                })
+
+            # Log failed attempt and return error
+            UserLogger.log_login(False, email, 'Invalid credentials')
+            return jsonify({
+                'success': False,
+                'error': 'אימייל או סיסמה שגויים'
+            })
 
         except Exception as e:
+            # Log error and return server error response
             print(f"Login error: {str(e)}")
             return jsonify({
                 'success': False,
@@ -51,6 +73,7 @@ def login():
 
 @login_page.route('/logout')
 def logout():
+    """Handle user logout requests."""
     UserLogger.log_logout()
     session.pop('user', None)
     return redirect(url_for('home_page.home'))
@@ -58,6 +81,7 @@ def logout():
 
 @login_page.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
+    """Handle forgotten password requests."""
     if request.method == 'POST':
         email = request.form.get('email')
 
@@ -71,7 +95,7 @@ def forgot_password():
             conn = get_db_connection()
             cursor = conn.cursor()
 
-            # Check if email exists
+            # Verify email exists
             cursor.execute('SELECT user_id FROM Users WHERE email = ?', (email,))
             user = cursor.fetchone()
 
@@ -81,11 +105,11 @@ def forgot_password():
                     'error': 'לא נמצא משתמש עם כתובת האימייל הזו'
                 })
 
-            # Generate reset token and expiry
+            # Setup password reset
             reset_token = EmailUtils.generate_reset_token()
             token_expiry = EmailUtils.get_token_expiry()
 
-            # Update user record with reset token
+            # Update user record
             cursor.execute('''
                 UPDATE Users 
                 SET reset_token = ?, reset_token_expiry = ?
@@ -93,14 +117,14 @@ def forgot_password():
             ''', (reset_token, token_expiry, email))
             conn.commit()
 
-            # Send reset email
+            # Send reset instructions
             if EmailUtils.send_reset_email(email, reset_token):
                 return jsonify({'success': True})
-            else:
-                return jsonify({
-                    'success': False,
-                    'error': 'אירעה שגיאה בשליחת האימייל'
-                })
+
+            return jsonify({
+                'success': False,
+                'error': 'אירעה שגיאה בשליחת האימייל'
+            })
 
         except Exception as e:
             print(f"Password reset error: {str(e)}")
@@ -117,10 +141,12 @@ def forgot_password():
 
 @login_page.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
+    """Handle password reset requests with verification token."""
     if request.method == 'POST':
         new_password = request.form.get('new_password')
         confirm_password = request.form.get('confirm_password')
 
+        # Validate input
         if not all([new_password, confirm_password]):
             return jsonify({
                 'success': False,
@@ -137,7 +163,7 @@ def reset_password(token):
             conn = get_db_connection()
             cursor = conn.cursor()
 
-            # Verify token and check expiry
+            # Verify token validity
             cursor.execute('''
                 SELECT user_id 
                 FROM Users 
@@ -151,11 +177,8 @@ def reset_password(token):
                     'error': 'הקישור לאיפוס הסיסמה אינו תקף או שפג תוקפו'
                 })
 
-            # Hash the new password using the existing hash_password function
-            from db_utils import hash_password
+            # Update password
             password_hash = hash_password(new_password)
-
-            # Update password and clear reset token
             cursor.execute('''
                 UPDATE Users 
                 SET password_hash = ?, reset_token = NULL, reset_token_expiry = NULL
@@ -175,5 +198,4 @@ def reset_password(token):
             cursor.close()
             conn.close()
 
-    # GET request - show reset password form
     return render_template('reset_password.html', token=token)

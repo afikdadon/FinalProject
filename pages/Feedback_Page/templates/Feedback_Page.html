@@ -1,5 +1,16 @@
-{% extends "base.html" %}
+<!--
+Feedback_Page.html-->
+<!--&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+<!--Description:-->
+<!--    Template for collecting user feedback on the Geometric Learning System.-->
+<!--    Includes sections for usability, educational value, and open-ended feedback.-->
 
+<!--Author: Karin Hershko and Afik Dadon-->
+<!--Date: February 2024
+-->
+
+
+{% extends "base.html" %}
 
 {% block css %}
 <link rel="stylesheet" href="{{ url_for('feedback_page.static', filename='css/Feedback_Page.css') }}">
@@ -27,7 +38,6 @@
                </div>
            </div>
 
-
            <div class="rating-question">
                <label>השאלות היו ברורות ומובנות</label>
                <div class="rating-scale">
@@ -41,13 +51,10 @@
            </div>
        </section>
 
-
        <!-- Educational Value -->
        <section class="feedback-section">
            <h2>תרומה ללמידה</h2>
            <p class="scale-description">דרג מ-1 (לא מסכים כלל) עד 5 (מסכים מאוד)</p>
-
-
            <div class="rating-question">
                <label>השאלות הפכו רלוונטיות יותר ככל שהתקדמתי במענה</label>
                <div class="rating-scale">
@@ -59,7 +66,6 @@
                    {% endfor %}
                </div>
            </div>
-
 
            <div class="rating-question">
                <label>המשפטים שהוצעו היו רלוונטיים לבעיה שלי</label>
@@ -73,7 +79,6 @@
                </div>
            </div>
 
-
            <div class="rating-question">
                <label>המערכת עזרה לי להבין ולהתקדם בפתרון הבעיה</label>
                <div class="rating-scale">
@@ -85,7 +90,6 @@
                    {% endfor %}
                </div>
            </div>
-
 
             <div class="choice-question">
                <label>האם היית משתמש במערכת שוב לפתירת בעיות בגיאומטריה?</label>
@@ -106,26 +110,20 @@
            </div>
        </section>
 
-
-
-
        <!-- Open Questions -->
       <section class="feedback-section">
            <h2>משוב לשיפור</h2>
-
 
            <div class="text-question">
                <label for="missing_questions">אילו שאלות לדעתך היו חסרות במערכת שיכלו לעזור לך להתקדם לפתרון?</label>
                <textarea id="missing_questions" name="missing_questions" rows="3"></textarea>
            </div>
 
-
            <div class="text-question">
                <label for="unclear_questions">אילו שאלות היו לא ברורות או קשות להבנה, וכיצד לדעתך ניתן לשפר אותן?</label>
                <textarea id="unclear_questions" name="unclear_questions" rows="3"></textarea>
            </div>
        </section>
-
 
        <div class="form-actions">
            <button type="submit" class="submit-btn">שלח משוב</button>
@@ -135,7 +133,6 @@
        אירעה שגיאה בשליחת המשוב. אנא נסה שוב.
    </div>
 
-
    <div id="thankYouModal" class="modal">
        <div class="modal-content text-center">
            <h2>תודה רבה!</h2>
@@ -144,8 +141,6 @@
            <img src="/static/media/Many thanks.png" alt="תודה" class="thanks-image">
        </div>
    </div>
-
-
 </div>
 {% endblock %}
 

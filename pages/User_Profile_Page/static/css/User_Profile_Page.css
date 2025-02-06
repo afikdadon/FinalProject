@@ -1,3 +1,16 @@
+/**
+ * User_Profile_Page.css
+ * -------------------
+ * Description:
+ *     Styles for the user profile page, providing a responsive design for both
+ *     regular users and admin dashboard. Includes styles for statistics cards,
+ *     activity timeline, and data visualization components.
+ *
+ * Author: Karin Hershko and Afik Dadon
+ * Date: February 2024
+ */
+
+
 .profile-container {
     max-width: 1000px;
     margin: 2rem auto;
@@ -83,11 +96,6 @@
     margin-bottom: 2rem;
 }
 
-.section-header i {
-    font-size: 1.5rem;
-    color: #4169e1;
-}
-
 .section-header h2 {
     margin: 0;
     color: #2d3748;
@@ -166,20 +174,6 @@
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
 
-.question-list {
-    margin-top: 1rem;
-}
-
-.question-list .question-item {
-    padding: 1.5rem 0;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-.question-list .question-item:last-child {
-    border-bottom: none;
-}
-
 .question-list .question-id {
     color: black;
     font-size: 1.1rem;
@@ -252,22 +246,19 @@
     color: #666;
 }
 
-/* Theorems and Questions Modal Content */
-.theorems-list .theorem-item,
-.questions-list .question-item {
+/* Theorems Modal Content */
+.theorems-list .theorem-item{
     border-bottom: 1px solid #e2e8f0;
     padding: 1.5rem 0;
     margin-bottom: 1rem;
 }
 
-.theorems-list .theorem-item:last-child,
-.questions-list .question-item:last-child {
+.theorems-list .theorem-item:last-child{
     border-bottom: none;
     margin-bottom: 0;
 }
 
-.theorems-list .theorem-id,
-.questions-list .question-id {
+.theorems-list .theorem-id{
     color: #4169e1;
     font-size: 1.1rem;
     font-weight: bold;
@@ -275,48 +266,17 @@
     display: block;
 }
 
-.theorems-list .theorem-text,
-.questions-list .question-text {
+.theorems-list .theorem-text {
     font-size: 1.1rem;
     line-height: 1.5;
     color: #2d3748;
     margin-bottom: 0.5rem;
 }
 
-.theorems-list .theorem-category,
-.questions-list .question-difficulty {
+.theorems-list .theorem-category {
     color: #666;
     font-size: 0.9rem;
     display: block;
-}
-
-/* Buttons */
-.show-theorems-btn,
-.show-questions-btn {
-    background: #4169e1;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin: 10px 0;
-    font-family: 'Heebo', sans-serif;
-    transition: all 0.3s ease;
-}
-
-.show-theorems-btn:hover,
-.show-questions-btn:hover {
-    background: #3451b2;
-    transform: translateY(-2px);
-}
-
-.theorems-section,
-.questions-section {
-    background: white;
-    border-radius: 1rem;
-    padding: 2rem;
-    margin-top: 2rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
 
 /* Recent Activity Section */
@@ -417,29 +377,6 @@
     margin-bottom: 2rem;
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
-
-/*.question-analytics {*/
-/*    display: grid;*/
-/*    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));*/
-/*    gap: 1.5rem;*/
-/*}*/
-
-/*.question-card {*/
-/*    background: white;*/
-/*    border-radius: 0.75rem;*/
-/*    padding: 1.5rem;*/
-/*    border: 1px solid #e2e8f0;*/
-/*}*/
-
-/*.difficulty-badge {*/
-/*    padding: 0.25rem 0.75rem;*/
-/*    border-radius: 1rem;*/
-/*    font-size: 0.875rem;*/
-/*}*/
-
-/*.difficulty-badge.level-1 { background: #4ade80; color: white; }*/
-/*.difficulty-badge.level-2 { background: #fbbf24; color: white; }*/
-/*.difficulty-badge.level-3 { background: #ef4444; color: white; }*/
 
 .analytics-container {
     background: white;

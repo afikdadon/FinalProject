@@ -1,4 +1,16 @@
-/*Login_Page.css*/
+/**
+ * Login_Page.css
+ * -------------
+ * Description:
+ *     Core styles for the authentication system of the Geometric Learning System.
+ *     Implements a responsive design for login, password reset, and related pages
+ *     with consistent styling and modern UI elements.
+ *
+ * Author: Karin Hershko and Afik Dadon
+ * Date: February 2024
+ */
+
+/* === Layout System === */
 .login-container {
     display: flex;
     min-height: calc(100vh - 160px);
@@ -33,6 +45,7 @@
     object-fit: contain;
 }
 
+/* === Typography === */
 .login-form h1 {
     color: #3F4D57;
     font-size: 36px;
@@ -41,6 +54,7 @@
     text-align: center;
 }
 
+/* === Form Elements === */
 .form-group {
     margin-bottom: 1.5rem;
 }
@@ -67,6 +81,7 @@ input:focus {
     outline: none;
 }
 
+/* === Password Input === */
 .password-container {
     position: relative;
 }
@@ -83,6 +98,7 @@ input:focus {
     padding: 0.5rem;
 }
 
+/* === Buttons === */
 .login-button {
     width: 50%;
     justify-content: center;
@@ -95,32 +111,41 @@ input:focus {
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.3s;
-    margin-top: 2rem;
+    margin: 2rem auto 0;
     display: block;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .login-button:hover {
     background-color: #3F4D57;
 }
 
+/* === Navigation Links === */
 .additional-options {
     margin-top: 1.5rem;
     text-align: center;
 }
 
-.register-link {
+.register-link,
+.forgot-password-link,
+.back-to-login {
     color: #3F4D57;
     text-decoration: none;
     font-size: 14px;
     transition: color 0.3s;
 }
 
-.register-link:hover {
+.register-link:hover,
+.forgot-password-link:hover,
+.back-to-login:hover {
     color: #8FD694;
 }
 
+.forgot-password-link {
+    display: block;
+    margin-top: 1rem;
+}
+
+/* === Feedback States === */
 .error-message {
     color: #ff0000;
     font-size: 12px;
@@ -129,31 +154,6 @@ input:focus {
 
 input.error {
     border-color: #ff0000;
-}
-
-/*forgot password*/
-.forgot-password-link {
-    display: block;
-    color: #3F4D57;
-    text-decoration: none;
-    font-size: 14px;
-    margin-top: 1rem;
-    transition: color 0.3s;
-}
-
-.forgot-password-link:hover {
-    color: #8FD694;
-}
-
-.back-to-login {
-    color: #3F4D57;
-    text-decoration: none;
-    font-size: 14px;
-    transition: color 0.3s;
-}
-
-.back-to-login:hover {
-    color: #8FD694;
 }
 
 .success-message {
@@ -165,7 +165,7 @@ input.error {
     margin: 20px 0;
 }
 
-
+/* === Responsive Design === */
 @media screen and (max-width: 768px) {
     .login-container {
         flex-direction: column;

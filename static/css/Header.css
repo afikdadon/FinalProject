@@ -1,9 +1,22 @@
+/**
+ * Header.css
+ * -------------------
+ * Description:
+ *     Defines styles for the site's header, navigation, and interactive elements.
+ *     Includes responsive design for mobile devices.
+ *
+ * Author: Karin Hershko and Afik Dadon
+ * Date: February 2024
+ */
+
+/* ===== Reset Styles ===== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* ===== Header Container ===== */
 header {
     background-color: #4169e1;
     color: white;
@@ -19,6 +32,7 @@ header {
     align-items: center;
 }
 
+/* ===== Header Title ===== */
 header h1 {
     font-size: 22px;
 }
@@ -28,6 +42,7 @@ header h1 a {
     text-decoration: none;
 }
 
+/* ===== Navigation ===== */
 nav ul {
     display: flex;
     align-items: center;
@@ -44,6 +59,7 @@ nav ul li a {
     font-size: 24px;
 }
 
+/* ===== Profile Icon ===== */
 .profile-icon,
 .fa-circle-user {
     font-size: 30px;
@@ -58,6 +74,7 @@ nav ul li a {
     transform: scale(1.1);
 }
 
+/* ===== Contact Icon & Tooltip ===== */
 .contact-icon a {
     position: relative;
     color: white;
@@ -66,8 +83,6 @@ nav ul li a {
     padding: 10px;
     transition: transform 0.1s, color 0.2s;
 }
-
-
 
 .contact-icon a::after {
     content: "צור קשר";
@@ -87,12 +102,12 @@ nav ul li a {
     transition: opacity 0.3s, visibility 0.3s;
 }
 
-
 .contact-icon a:hover::after {
     opacity: 1;
     visibility: visible;
 }
 
+/* ===== Responsive Design ===== */
 @media screen and (max-width: 768px) {
     header {
         padding: 8px 15px;

@@ -1,3 +1,16 @@
+/**
+ * Contact_Page.css
+ * --------------
+ * Styles for the contact form page including:
+ * - Layout and responsive design
+ * - Form styling and animations
+ * - Error and success states
+ * - Loading animations
+ *
+ * Author: Karin Hershko and Afik Dadon
+ * Date: February 2024
+ */
+
 .contact-container {
     max-width: 1200px;
     margin: 0 auto;

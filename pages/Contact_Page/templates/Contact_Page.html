@@ -1,3 +1,15 @@
+<!--
+Contact_Page.html-->
+<!--&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+<!--Description:-->
+<!--    Template for the contact form page of the Geometric Learning System.-->
+<!--    Provides a user-friendly interface for sending messages and feedback.-->
+
+<!--Author: Karin Hershko and Afik Dadon-->
+<!--Date: February 2024
+-->
+
+
 {% extends "base.html" %}
 
 {% block css %}
@@ -12,7 +24,9 @@
             <h1>צור קשר</h1>
             <p class="subtitle">נשמח לשמוע ממך! מלא את הפרטים ונחזור אליך בהקדם</p>
         </div>
-        <img src="{{ url_for('static', filename='media/let me know.png') }}" alt="Contact Us" class="contact-image">
+        <img src="{{ url_for('static', filename='media/let me know.png') }}"
+             alt="Contact Us"
+             class="contact-image">
     </div>
 
     <div class="contact-box">
@@ -28,27 +42,45 @@
 
         <form action="{{ url_for('contact_page.submit') }}" method="POST" id="contactForm">
             <div class="form-group">
-                <label for="name"><i class="fas fa-user"></i> שם מלא</label>
-                <input type="text" id="name" name="name"
+                <label for="name">
+                    <i class="fas fa-user"></i> שם מלא
+                </label>
+                <input type="text"
+                       id="name"
+                       name="name"
                        value="{{ user.first_name + ' ' + user.last_name if user else '' }}"
                        required>
             </div>
 
             <div class="form-group">
-                <label for="email"><i class="fas fa-envelope"></i> אימייל</label>
-                <input type="email" id="email" name="email"
+                <label for="email">
+                    <i class="fas fa-envelope"></i> אימייל
+                </label>
+                <input type="email"
+                       id="email"
+                       name="email"
                        value="{{ user.email if user else '' }}"
                        required>
             </div>
 
             <div class="form-group">
-                <label for="subject"><i class="fas fa-tag"></i> נושא</label>
-                <input type="text" id="subject" name="subject" required>
+                <label for="subject">
+                    <i class="fas fa-tag"></i> נושא
+                </label>
+                <input type="text"
+                       id="subject"
+                       name="subject"
+                       required>
             </div>
 
             <div class="form-group">
-                <label for="message"><i class="fas fa-comment"></i> הודעה</label>
-                <textarea id="message" name="message" rows="5" required></textarea>
+                <label for="message">
+                    <i class="fas fa-comment"></i> הודעה
+                </label>
+                <textarea id="message"
+                          name="message"
+                          rows="5"
+                          required></textarea>
             </div>
 
             <button type="submit" id="submitBtn">

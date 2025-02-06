@@ -1,3 +1,17 @@
+/**
+ * Feedback_Page.css
+ * --------------
+ * Styles for the feedback form page including:
+ * - Layout and responsive design
+ * - Form styling
+ * - Rating scales and choice options
+ * - Animations and transitions
+ *
+ * Author: Karin Hershko and Afik Dadon
+ * Date: February 2024
+ */
+
+/*Main Container Styles*/
 .feedback-container {
     max-width: 900px;
     margin: 2rem auto;
@@ -12,6 +26,9 @@
     margin-bottom: 2rem;
 }
 
+/* === Section Styles ===
+ * Styles for individual feedback sections
+ */
 .feedback-section {
     background: white;
     border-radius: 1.5rem;
@@ -32,7 +49,9 @@
     font-size: 0.9rem;
 }
 
-/* Rating Questions Styling */
+/* === Rating Questions Styles ===
+ * Styles for rating scale questions and options
+ */
 .rating-question {
     margin-bottom: 2rem;
     padding: 1rem;
@@ -56,6 +75,9 @@
     text-align: center;
 }
 
+/* === Rating Input Styles ===
+ * Custom styles for rating radio inputs
+ */
 .rating-option input[type="radio"] {
     display: none;
 }
@@ -65,18 +87,18 @@
     width: 40px;
     height: 40px;
     line-height: 40px;
-    background-color: white ;
+    background-color: white;
     color: black;
     border: 2px solid #ddd;
     border-radius: 50%;
     cursor: pointer;
-    transition: none;
+    transition: all 0.3s ease;
     -webkit-appearance: none;
     -moz-appearance: none;
 }
 
 .rating-option input[type="radio"]:checked + label {
-    background-color: #4169e1 ;
+    background-color: #4169e1;
     color: white;
     border: 2px solid #ddd;
 }
@@ -85,7 +107,9 @@
     background-color: lightgray;
 }
 
-/* Choice Questions Styling */
+/* === Choice Questions Styles ===
+ * Styles for yes/no/partial choice questions
+ */
 .choice-question {
     margin-bottom: 2rem;
     padding: 1rem;
@@ -97,10 +121,6 @@
     display: block;
     margin-bottom: 1.5rem;
     font-weight: 500;
-}
-
-.choice-question {
-    font-weight: normal;
 }
 
 .choice-options {
@@ -120,7 +140,9 @@
     height: 20px;
 }
 
-/* Text Questions Styling */
+/* === Text Questions Styles ===
+ * Styles for open-ended text questions
+ */
 .text-question {
     margin-bottom: 2rem;
 }
@@ -139,14 +161,18 @@
     resize: vertical;
     font-family: 'Heebo', sans-serif;
     direction: rtl;
+    transition: border-color 0.3s ease;
 }
 
 .text-question textarea:focus {
     border-color: #4169e1;
     outline: none;
+    box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.1);
 }
 
-/* Submit Button Styling */
+/* === Submit Button Styles ===
+ * Styles for the form submit button
+ */
 .form-actions {
     text-align: center;
     margin-top: 2rem;
@@ -166,15 +192,21 @@
 .submit-btn:hover {
     background: #3258ce;
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(65, 105, 225, 0.2);
 }
 
-/* Loading State */
+/* === Loading State Styles ===
+ * Styles for form submission loading state
+ */
 .submit-btn.loading {
     opacity: 0.7;
     cursor: not-allowed;
+    background: #3F4D57;
 }
 
-/* Error Message */
+/* === Error Message Styles ===
+ * Styles for error message display
+ */
 .error-message {
     display: none;
     text-align: center;
@@ -183,8 +215,12 @@
     color: #721c24;
     border-radius: 0.5rem;
     margin-top: 1rem;
+    animation: fadeIn 0.3s ease-in;
 }
 
+/* === Modal Styles ===
+ * Styles for thank you modal
+ */
 .modal {
     display: none;
     position: fixed;
@@ -207,6 +243,7 @@
     text-align: center;
     direction: rtl;
     font-size: 18px;
+    animation: modalAppear 0.3s ease-out;
 }
 
 .thanks-image {
@@ -218,10 +255,41 @@
     text-align: center;
 }
 
-/* Responsive Design */
+/* === Animations ===
+ * Define animations used throughout the form
+ */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes modalAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* === Responsive Design ===
+ * Media queries for different screen sizes
+ */
 @media (max-width: 768px) {
     .feedback-container {
         padding: 1rem;
+    }
+
+    .feedback-section {
+        padding: 1.5rem;
     }
 
     .rating-scale {
@@ -239,5 +307,60 @@
         width: 35px;
         height: 35px;
         line-height: 35px;
+    }
+
+    .modal-content {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .thanks-image {
+        max-width: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .feedback-container h1 {
+        font-size: 1.8rem;
+    }
+
+    .feedback-section h2 {
+        font-size: 1.3rem;
+    }
+
+    .rating-question label,
+    .choice-question > label,
+    .text-question label {
+        font-size: 0.9rem;
+    }
+
+    .submit-btn {
+        padding: 0.8rem 2rem;
+        font-size: 1rem;
+    }
+
+    .thanks-image {
+        max-width: 150px;
+    }
+}
+
+/* === Print Styles ===
+ * Optimize for printing
+ */
+@media print {
+    .feedback-container {
+        margin: 0;
+        padding: 0;
+    }
+
+    .feedback-section {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+
+    .submit-btn,
+    .modal {
+        display: none;
     }
 }

@@ -1,8 +1,25 @@
-// forgot_password.js (place in Login_Page/static/js)
+/**
+ * Forgot_Password.js
+ * ----------------
+ * Description:
+ *     Client-side functionality for the password recovery page.
+ *     Handles email submission, validation, and success/error states
+ *     for the password reset request process.
+ *
+ * Author: Karin Hershko and Afik Dadon
+ * Date: February 2024
+ */
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize form elements
     const form = document.getElementById('forgotPasswordForm');
     const emailInput = document.getElementById('email');
 
+    /**
+     * Display error message below input field
+     * @param {HTMLElement} input - The input element with error
+     * @param {string} message - Error message to display
+     */
     function showError(input, message) {
         const formGroup = input.closest('.form-group');
         let errorDiv = formGroup.querySelector('.error-message');
@@ -17,6 +34,10 @@ document.addEventListener('DOMContentLoaded', function() {
         input.classList.add('error');
     }
 
+    /**
+     * Remove error message and styling from input
+     * @param {HTMLElement} input - The input element to clear
+     */
     function clearError(input) {
         const formGroup = input.closest('.form-group');
         const errorDiv = formGroup.querySelector('.error-message');
@@ -26,22 +47,24 @@ document.addEventListener('DOMContentLoaded', function() {
         input.classList.remove('error');
     }
 
+    /**
+     * Handle form submission
+     * Validates email and submits form via AJAX
+     */
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         clearError(emailInput);
 
-        const formData = new FormData(form);
-
         try {
             const response = await fetch(form.action, {
                 method: 'POST',
-                body: formData
+                body: new FormData(form)
             });
 
             const result = await response.json();
 
             if (result.success) {
-                // Replace form with success message
+                // Display success message
                 form.innerHTML = `
                     <div class="success-message">
                         <p>קישור לאיפוס הסיסמה נשלח לכתובת האימייל שלך.</p>
@@ -56,7 +79,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    emailInput.addEventListener('input', () => {
-        clearError(emailInput);
-    });
+    // Real-time validation
+    emailInput.addEventListener('input', () => clearError(emailInput));
 });
