@@ -20,9 +20,9 @@ Triangle Types:
     3: Right triangle
 
 Author: Karin Hershko and Afik Dadon
-Date: February 2024
+Date: February 2025
 """
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, Set
 import math
 import random
 from flask import session
@@ -96,6 +96,29 @@ class Geometry_Manager:
                """)
         return cursor.fetchall()
 
+    def _calculate_question_relevance_score(self, question_id: int, triangle_weights: Dict[int, float]) -> float:
+        """Calculate how relevant a question is based on current triangle weights and answer multipliers."""
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT triangle_id, answer_type, multiplier 
+            FROM AnswerMultipliers 
+            WHERE question_id = ?
+        """, (question_id,))
+
+        # Track maximum potential impact
+        max_impact = 0
+        active_triangles = {tid for tid, weight in triangle_weights.items() if weight > 0.05}  # 5% threshold
+
+        for row in cursor.fetchall():
+            triangle_id, _, multiplier = row
+            if triangle_id in active_triangles:
+                current_weight = triangle_weights[triangle_id]
+                # Calculate potential change in weight
+                potential_change = abs(current_weight * multiplier - current_weight)
+                max_impact = max(max_impact, potential_change)
+
+        return max_impact
+
     def get_next_question(self, is_admin: bool = False) -> Tuple[Optional[int], Optional[str], Optional[Dict]]:
         """Select the most appropriate next question based on current weights and history."""
         state = session['geometry_state']
@@ -135,26 +158,13 @@ class Geometry_Manager:
             for question in all_questions:
                 question_id = question[0]
                 if question_id not in excluded_questions:
-                    # Check triangle relevance
-                    cursor.execute("""
-                           SELECT DISTINCT ttm.triangle_id, ttm.connection_strength
-                           FROM TheoremQuestionMatrix tqm
-                           JOIN TheoremTriangleMatrix ttm ON tqm.theorem_id = ttm.theorem_id
-                           WHERE tqm.question_id = ? AND tqm.relevance = 1
-                       """, (question_id,))
+                    # Calculate both information gain and relevance score
+                    info_gain = self._calculate_information_gain(question_id)
+                    relevance_score = self._calculate_question_relevance_score(question_id, state['triangle_weights'])
 
-                    triangle_relevance = 0
-                    has_valid_triangle = False
-                    for triangle_id, strength in cursor.fetchall():
-                        triangle_weight = state['triangle_weights'].get(triangle_id, 0)
-                        if triangle_weight > 0:
-                            has_valid_triangle = True
-                            triangle_relevance += strength * triangle_weight
-
-                    if has_valid_triangle:
-                        info_gain = self._calculate_information_gain(question_id)
-                        theorem_weight = self._get_theorem_weight_for_question(question_id)
-                        question_scores[question_id] = info_gain * theorem_weight * (1 + triangle_relevance)
+                    # Combine scores - only use questions that have both information gain and relevance
+                    if info_gain > 0 and relevance_score > 0:
+                        question_scores[question_id] = info_gain * relevance_score
 
             if not question_scores:
                 return None, None, debug_info
@@ -228,27 +238,52 @@ class Geometry_Manager:
 
     # === Weight Calculations and Updates ===
     def _calculate_information_gain(self, question_id: int) -> float:
-        """Calculate information gain for a potential question."""
+        """Calculate information gain for a potential question, weighted by current triangle probabilities."""
         state = session['geometry_state']
-        current_entropy = self._calculate_entropy(list(state['triangle_weights'].values()))
+        current_weights = state['triangle_weights']
+        current_entropy = self._calculate_entropy(list(current_weights.values()))
 
         cursor = self.conn.cursor()
+        # Get all multipliers for this question
         cursor.execute("""
-            SELECT DISTINCT answer_type 
+            SELECT triangle_id, answer_type, multiplier 
             FROM AnswerMultipliers 
             WHERE question_id = ?
         """, (question_id,))
-        possible_answers = cursor.fetchall()
 
+        # Group multipliers by answer type
+        answer_multipliers = {}
+        for triangle_id, answer_type, multiplier in cursor.fetchall():
+            if answer_type not in answer_multipliers:
+                answer_multipliers[answer_type] = []
+            answer_multipliers[answer_type].append((triangle_id, multiplier))
+
+        # Calculate probability-weighted entropy for each possible answer
         expected_entropy = 0
-        for answer in possible_answers:
-            answer_type = answer[0]
-            new_weights = self._simulate_answer_weights(question_id, answer_type)
-            entropy = self._calculate_entropy(list(new_weights.values()))
-            p_answer = 1.0 / len(possible_answers)
-            expected_entropy += p_answer * entropy
+        total_answer_probability = 0
 
-        return current_entropy - expected_entropy
+        for answer_type, multipliers in answer_multipliers.items():
+            # Calculate probability of this answer based on current weights
+            answer_probability = 0
+            for triangle_id, multiplier in multipliers:
+                if current_weights[triangle_id] > 0:
+                    # Higher current weight and multiplier means this answer is more likely
+                    answer_probability += current_weights[triangle_id] * multiplier
+
+            if answer_probability > 0:
+                # Simulate new weights for this answer
+                new_weights = self._simulate_answer_weights(question_id, answer_type)
+                entropy = self._calculate_entropy(list(new_weights.values()))
+
+                expected_entropy += answer_probability * entropy
+                total_answer_probability += answer_probability
+
+        # Normalize by total probability
+        if total_answer_probability > 0:
+            expected_entropy /= total_answer_probability
+            return current_entropy - expected_entropy
+
+        return 0  # If no valid answers, no information gain
 
     def _calculate_entropy(self, probabilities: List[float]) -> float:
         """Calculate Shannon entropy for given probability distribution."""
@@ -258,8 +293,7 @@ class Geometry_Manager:
         return -sum(p * math.log2(p) if p > 0 else 0 for p in non_zero_probs)
 
     def _update_triangle_weights(self, question_id: int, answer: str):
-        """Update triangle weights based on user's answer to a question.
-        Applies multipliers from the database and normalizes resulting weights."""
+        """Update triangle weights with improved distribution and logging."""
         state = session['geometry_state']
         cursor = self.conn.cursor()
 
@@ -275,16 +309,65 @@ class Geometry_Manager:
         if not multipliers:
             return
 
-        total = 0
-        for triangle_id, multiplier in multipliers:
-            state['triangle_weights'][triangle_id] *= multiplier
-            total += state['triangle_weights'][triangle_id]
+        # Convert multipliers to dictionary
+        multiplier_dict = {tid: mult for tid, mult in multipliers}
 
-        # Normalize weights
+        # Track active triangles (weight >= 5%)
+        active_triangles = {tid for tid, weight in state['triangle_weights'].items()
+                            if weight >= 0.05}
+
+        # Calculate new weights
+        new_weights = state['triangle_weights'].copy()
+        total_weight_change = 0
+
+        # First pass: Apply multipliers and track weight changes
+        for triangle_id, current_weight in state['triangle_weights'].items():
+            if current_weight < 0.05:  # Already eliminated
+                new_weights[triangle_id] = 0
+                continue
+
+            multiplier = multiplier_dict.get(triangle_id, 1.0)
+
+            # Special handling for general triangle (type 0)
+            if triangle_id == 0:
+                # Count active specific triangles
+                active_specific = sum(1 for tid in active_triangles if tid != 0)
+                if active_specific > 0:
+                    # Dampen general triangle growth when specific types are possible
+                    if multiplier > 1.0:
+                        dampened_multiplier = 1.0 + (multiplier - 1.0) * 0.7
+                        multiplier = dampened_multiplier
+
+            new_weight = current_weight * multiplier
+            new_weights[triangle_id] = new_weight
+            total_weight_change += abs(new_weight - current_weight)
+
+        # Second pass: Normalize and handle eliminated triangles
+        total = sum(weight for weight in new_weights.values())
         if total > 0:
-            for triangle_id in state['triangle_weights']:
-                state['triangle_weights'][triangle_id] /= total
+            # If some triangles are being eliminated, redistribute their weight proportionally
+            eliminated_weight = sum(state['triangle_weights'][tid]
+                                    for tid in state['triangle_weights']
+                                    if new_weights[tid] < 0.05)
 
+            if eliminated_weight > 0:
+                # Get remaining triangles
+                remaining_triangles = [tid for tid, weight in new_weights.items()
+                                       if weight >= 0.05]
+
+                if remaining_triangles:
+                    # Distribute eliminated weight proportionally among remaining triangles
+                    for tid in remaining_triangles:
+                        proportion = new_weights[tid] / sum(new_weights[t] for t in remaining_triangles)
+                        new_weights[tid] += eliminated_weight * proportion
+
+            # Final normalization
+            total = sum(weight for weight in new_weights.values())
+            for triangle_id in new_weights:
+                if total > 0:
+                    new_weights[triangle_id] /= total
+
+        state['triangle_weights'] = new_weights
         session.modified = True
 
 
@@ -356,10 +439,12 @@ class Geometry_Manager:
         return min(weight_sum, 1.0)
 
     def _simulate_answer_weights(self, question_id: int, answer: str) -> Dict[int, float]:
-        """Simulate how weights would change for a given answer.
-        Used in information gain calculations."""
+        """Simulate how weights would change for a given answer."""
         state = session['geometry_state']
-        new_weights = state['triangle_weights'].copy()
+        current_weights = state['triangle_weights'].copy()
+
+        # If a triangle already has zero weight, it should stay zero
+        zero_weight_triangles = {tid for tid, weight in current_weights.items() if weight == 0}
 
         cursor = self.conn.cursor()
         cursor.execute("""
@@ -368,16 +453,57 @@ class Geometry_Manager:
             WHERE question_id = ? AND answer_type = ?
         """, (question_id, answer))
 
-        total = 0
+        # Keep track of new weights
+        new_weights = current_weights.copy()
         for triangle_id, multiplier in cursor.fetchall():
-            new_weights[triangle_id] *= multiplier
-            total += new_weights[triangle_id]
+            if triangle_id not in zero_weight_triangles:  # Only update non-zero triangles
+                new_weights[triangle_id] *= multiplier
+
+        # Normalize non-zero weights
+        total = sum(weight for tid, weight in new_weights.items()
+                    if tid not in zero_weight_triangles)
 
         if total > 0:
             for triangle_id in new_weights:
-                new_weights[triangle_id] /= total
+                if triangle_id not in zero_weight_triangles:
+                    new_weights[triangle_id] /= total
 
         return new_weights
+
+    def _is_question_relevant(self, question_id: int, active_triangles: Set[int]) -> bool:
+        """Determine if a question is still relevant given current triangle weights."""
+        cursor = self.conn.cursor()
+        state = session['geometry_state']
+        weights = state['triangle_weights']
+
+        # If general triangle (type 0) is dominant
+        if weights[0] > 0.8:
+            cursor.execute("""
+                SELECT triangle_id, answer_type, multiplier 
+                FROM AnswerMultipliers 
+                WHERE question_id = ? AND triangle_id = 0
+            """, (question_id,))
+
+            # Get all multipliers for general triangle
+            multipliers = [row[2] for row in cursor.fetchall()]
+
+            # Question is only relevant if it could significantly reduce general triangle's weight
+            # or increase another triangle's weight
+            return any(multiplier < 0.8 for multiplier in multipliers)
+
+        # For all other cases
+        cursor.execute("""
+            SELECT triangle_id, answer_type, multiplier 
+            FROM AnswerMultipliers 
+            WHERE question_id = ?
+        """, (question_id,))
+
+        for triangle_id, _, multiplier in cursor.fetchall():
+            if triangle_id in active_triangles and abs(multiplier - 1.0) > 0.3:
+                return True
+
+        return False
+
 
     # === Session Management ===
 
