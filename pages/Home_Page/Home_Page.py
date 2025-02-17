@@ -12,7 +12,7 @@ Main Components:
     - Session Management: Handles user session data for personalized content
 
 Author: Karin Hershko and Afik Dadon
-Date: February 2024
+Date: February 2025
 """
 
 from flask import Blueprint, render_template, session

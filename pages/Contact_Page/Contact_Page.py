@@ -6,7 +6,7 @@ Description:
     Manages user message submissions and form validation.
 
 Author: Karin Hershko and Afik Dadon
-Date: February 2024
+Date: February 2025
 """
 
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash

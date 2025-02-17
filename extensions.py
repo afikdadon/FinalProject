@@ -15,7 +15,7 @@ Usage:
     2. db_utils.py - for password hashing and verification functions
 
 Author: Karin Hershko and Afik Dadon
-Date: February 2024
+Date: February 2025
 """
 
 from flask_bcrypt import Bcrypt

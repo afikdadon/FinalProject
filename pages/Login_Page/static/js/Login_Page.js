@@ -6,7 +6,7 @@
  *     Handles form submission, validation, error display, and password visibility.
  *
  * Author: Karin Hershko and Afik Dadon
- * Date: February 2024
+ * Date: February 2025
  */
 
 document.addEventListener('DOMContentLoaded', function() {

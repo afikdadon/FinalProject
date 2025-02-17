@@ -13,7 +13,7 @@ Routes:
     - /reset-password/<token>: Password reset with token verification
 
 Author: Karin Hershko and Afik Dadon
-Date: February 2024
+Date: February 2025
 """
 
 from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify

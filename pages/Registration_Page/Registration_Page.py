@@ -13,7 +13,7 @@ Main Components:
     - Response Management: JSON responses for AJAX requests
 
 Author: Karin Hershko and Afik Dadon
-Date: February 2024
+Date: February 2025
 """
 
 from flask import Blueprint, render_template, request, jsonify

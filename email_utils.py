@@ -12,7 +12,7 @@ Main Components:
     - Email Sending: SMTP connection and email delivery
 
 Author: Karin Hershko and Afik Dadon
-Date: February 2024
+Date: February 2025
 """
 
 import smtplib

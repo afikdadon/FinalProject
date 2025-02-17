@@ -14,7 +14,7 @@
  *     - Debug Interface: Provides developer tools and information
  *
  * Author: Karin Hershko and Afik Dadon
- * Date: February 2024
+ * Date: February 2025
  */
 
 // === Global State Management ===

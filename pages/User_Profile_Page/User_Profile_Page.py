@@ -14,7 +14,7 @@ Main Components:
     - Theorem Database: Management of geometric theorems
 
 Author: Karin Hershko and Afik Dadon
-Date: February 2024
+Date: February 2025
 """
 
 from flask import Blueprint, render_template, session, redirect, url_for

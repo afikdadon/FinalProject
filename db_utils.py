@@ -13,7 +13,7 @@ Main Components:
     - Password Hashing and Verification
 
 Author: Karin Hershko and Afik Dadon
-Date: February 2024
+Date: February 2025
 """
 
 import pyodbc

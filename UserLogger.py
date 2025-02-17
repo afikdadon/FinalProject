@@ -17,7 +17,7 @@ Database:
     - Fields: user_id, action_type, action_data, timestamp (auto-generated)
 
 Author: Karin Hershko and Afik Dadon
-Date: February 2024
+Date: February 2025
 """
 
 import json

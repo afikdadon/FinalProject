@@ -8,7 +8,7 @@
  * - Error handling and display
  *
  * Author: Karin Hershko and Afik Dadon
- * Date: February 2024
+ * Date: February 2025
  */
 
 document.addEventListener('DOMContentLoaded', function() {
